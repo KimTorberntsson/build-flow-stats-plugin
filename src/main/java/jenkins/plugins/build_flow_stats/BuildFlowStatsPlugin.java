@@ -5,6 +5,12 @@ import hudson.Extension;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ManagementLink;
 
+import java.io.IOException;
+import javax.servlet.ServletException;
+
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest;
+
 /**
 * Starting point for the Build Flow Stats Plugin.
 *
@@ -35,5 +41,13 @@ public class BuildFlowStatsPlugin extends Plugin {
         public String getDescription() {
             return "Stores and presents data about builds and subbuilds from the Build Flow Plugin";
         }
+    }
+
+		public void doCollectData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+     req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/collectData.jelly").forward(req, res);
+    }
+
+		public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+     req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
 }
