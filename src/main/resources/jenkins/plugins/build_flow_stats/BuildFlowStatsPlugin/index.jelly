@@ -3,8 +3,31 @@
 
 <l:layout title="${%Flow Build Stats Plugin}" permission="${it.requiredPermission}">
 
+	<l:side-panel>
+    <l:tasks>
+      <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
+    </l:tasks>
+  </l:side-panel>
+
 	<l:main-panel>
-	<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
+		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
+		<hr/>
+		<h2>${%Search Criteria}</h2>
+		<label>Show builds for the last: </label>
+		<input type="text" id="searchBuild_range" name="range" size="5" value="2"/>
+		<select id="searchBuild_rangeUnits" name="rangeUnits">
+			<option>Days</option>
+			<option selected="true">Weeks</option>
+    	<option>Months</option>
+    	<option>Years</option>
+		</select>
+		<br/>
+		<br/>
+		<label>Jobs to include: </label>
+		<input type="text" id ="searchBuild_jobName" name="jobName" size="20"/>
+		<br/>
+		<br/>
+		<input type="submit" class="submit-button" value="${%Search}" name="Submit" />
 	</l:main-panel>
 </l:layout> 
 
