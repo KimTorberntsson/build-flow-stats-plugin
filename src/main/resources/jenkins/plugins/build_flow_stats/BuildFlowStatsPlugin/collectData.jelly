@@ -13,8 +13,10 @@
 	<l:main-panel>
 		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
 		<hr/>
-		<h2>${%Data Collection}</h2>
-		
+		<h1>${%Data Collection}</h1>
+		<label>Collecting data for the ${collectDataOptions.range} last ${collectDataOptions.rangeUnits}</label>
+		<br/>
+		<label>Collecting data for: ${collectDataOptions.jobName}</label>
 	</l:main-panel>	
 
 </l:layout> 
