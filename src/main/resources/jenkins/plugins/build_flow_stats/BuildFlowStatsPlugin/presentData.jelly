@@ -17,7 +17,31 @@
 		<label>Presenting data for the ${presentDataOptions.range} last ${presentDataOptions.rangeUnits}</label>
 		<br/>
 		<label>Presenting data for: ${presentDataOptions.jobName}</label>
-	</l:main-panel>	
+
+		<h2>Job Builds</h2>
+		<table id="jobBuilds" class="sortable pane bigtable">	
+			<th>${%Job Name}</th>
+			<th>${%# Succesful}</th>
+			<th>${%# Failed}</th>
+    	<th>${%# Unstable}</th>
+    	<th>${%# Aborted}</th>
+    	<th>${%# Not Built}</th>
+    	<th>${%# Total Builds}</th>
+    	<th>${%Failure Rate}</th>
+			<tr/>
+			<td><a href="${rootURL}/job/${presentDataOptions.jobName}/">${presentDataOptions.jobName}</a></td>
+			<td>3</td>
+			<td>2</td>
+			<td>0</td>
+			<td>0</td>
+			<td>0</td>
+			<td>5</td>
+			<td>60%</td>
+			<tr/>
+			
+		</table>
+
+	</l:main-panel>
 
 </l:layout> 
 </j:jelly>
