@@ -43,10 +43,12 @@ public class BuildFlowStatsPlugin extends Plugin {
         }
     }
 
-		public void doCollectData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
-			InputOptions collectDataOptions = new InputOptions(req);
-			req.setAttribute("collectDataOptions", collectDataOptions);
-    	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/collectData.jelly").forward(req, res);
+		public void doGetToDataCollectionOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+    	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataCollectionOptions.jelly").forward(req, res);
+    }
+
+		public void doGetToDataPresentationOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+    	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataPresentationOptions.jelly").forward(req, res);
     }
 
 		public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
