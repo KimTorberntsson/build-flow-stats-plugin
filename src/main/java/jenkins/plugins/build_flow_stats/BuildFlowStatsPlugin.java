@@ -43,17 +43,18 @@ public class BuildFlowStatsPlugin extends Plugin {
         }
     }
 
-		public void doGetToDataCollectionOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+	public void doGetToDataCollectionOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataCollectionOptions.jelly").forward(req, res);
     }
 
-		public void doGetToDataPresentationOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+	public void doGetToDataPresentationOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataPresentationOptions.jelly").forward(req, res);
     }
 
-		public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+	public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 			InputOptions presentDataOptions = new InputOptions(req);
 			req.setAttribute("presentDataOptions", presentDataOptions);
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
+
 }

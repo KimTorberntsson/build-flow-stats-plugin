@@ -13,7 +13,6 @@
 		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
 		<hr/>
 		<br/>
-		
 		<form action="getToDataCollectionOptions">
 		<input type="submit" class="submit-button" value="${%To Data Collection Options}" name="Submit" />
 		</form>
