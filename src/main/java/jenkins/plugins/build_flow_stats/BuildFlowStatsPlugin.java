@@ -20,7 +20,7 @@ import org.kohsuke.stapler.StaplerRequest;
 @ExportedBean
 public class BuildFlowStatsPlugin extends Plugin {
 /**
-* Add a link in the administration panel linking to the build metrics search page
+* Add a link in the administration panel linking to the build flow stats index page
 */
     @Extension
     public static class BuildFlowStatsPluginManagementLink extends ManagementLink {
