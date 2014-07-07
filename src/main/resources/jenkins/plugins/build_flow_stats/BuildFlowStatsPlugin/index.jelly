@@ -20,9 +20,6 @@
 		<form action="getToDataPresentationOptions">
 		<input type="submit" class="submit-button" value="${%To Data Presentation Options}" name="Submit" />
 		</form>
-		<br/>
-		<label>${it.myString}</label>
-
 	</l:main-panel>
 </l:layout> 
 </j:jelly>

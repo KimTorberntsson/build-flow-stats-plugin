@@ -2,7 +2,6 @@ package jenkins.plugins.build_flow_stats;
 
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
-
 import org.kohsuke.stapler.StaplerRequest;
 
 /**

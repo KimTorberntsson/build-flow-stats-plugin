@@ -19,28 +19,7 @@
 		<label>Presenting data for: ${presentDataOptions.jobName}</label>
 
 		<h2>Job Builds</h2>
-		<table id="jobBuilds" class="sortable pane bigtable">	
-			<th>${%Job Name}</th>
-			<th>${%# Succesful}</th>
-			<th>${%# Failed}</th>
-    	<th>${%# Unstable}</th>
-    	<th>${%# Aborted}</th>
-    	<th>${%# Not Built}</th>
-    	<th>${%# Total Builds}</th>
-    	<th>${%Failure Rate}</th>
-			<tr/>
-			<td><a href="${rootURL}/job/${presentDataOptions.jobName}/">${presentDataOptions.jobName}</a></td>
-			<td>3</td>
-			<td>2</td>
-			<td>0</td>
-			<td>0</td>
-			<td>0</td>
-			<td>5</td>
-			<td>60%</td>
-			<tr/>
-			
-		</table>
-
+		<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${failedBuildsTreeForView}</pre>
 	</l:main-panel>
 
 </l:layout> 
