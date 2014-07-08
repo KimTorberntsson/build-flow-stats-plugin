@@ -2,6 +2,7 @@ package jenkins.plugins.build_flow_stats;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import java.util.ArrayList;
 
 public class FlowJob extends Job {
 
@@ -26,11 +27,8 @@ public class FlowJob extends Job {
 		XMLJobFactory.addBuildsFromNode(flowBuildNode, subJobs);
 	}
 
-	public String toString() {
-		return jobName + "\n" + subJobs;
-	}
-
-	public String getFailedBuildsTree(int tabLevel) {
-		return super.getFailedBuildsTree(tabLevel) + subJobs.getFailedBuildsTree(tabLevel+1);
+	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
+		super.getFailedBuildsTree(tabLevel, strings);
+		subJobs.getFailedBuildsTree(tabLevel+1, strings);
 	}
 }

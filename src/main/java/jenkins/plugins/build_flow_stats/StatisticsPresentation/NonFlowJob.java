@@ -28,12 +28,9 @@ public class NonFlowJob extends Job {
 		}	
 	}
 
-	public String toString() {
-		return jobName + "\n" + failureCauses;
-	}
-
-	public String getFailedBuildsTree(int tabLevel) {
-		return super.getFailedBuildsTree(tabLevel) + failureCauses.getFailedBuildsTree(tabLevel+1);
+	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
+		super.getFailedBuildsTree(tabLevel, strings);
+		failureCauses.getFailedBuildsTree(tabLevel+1, strings);
 	}
 		
 }

@@ -19,7 +19,9 @@
 		<label>Presenting data for: ${presentDataOptions.jobName}</label>
 
 		<h2>Job Builds</h2>
-		<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${failedBuildsTreeForView}</pre>
+		<j:forEach var="string" items="${failedBuildsTreeForView}">
+			<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${string}</pre>
+		</j:forEach>
 	</l:main-panel>
 
 </l:layout> 

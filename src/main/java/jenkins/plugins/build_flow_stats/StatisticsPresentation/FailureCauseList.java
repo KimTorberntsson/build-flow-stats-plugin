@@ -3,6 +3,7 @@ package jenkins.plugins.build_flow_stats;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 
 public class FailureCauseList {
 	
@@ -20,21 +21,11 @@ public class FailureCauseList {
 		}
 	}
 
-	public String toString() {
-		String ret = "";
+	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
 		Iterator<String> theKeys = failureCauses.keySet().iterator();
 		while (theKeys.hasNext()) {
-			ret = ret + failureCauses.get(theKeys.next()) + "\n";
+			failureCauses.get(theKeys.next()).getFailedBuildsTree(tabLevel, strings);
 		}
-		return ret;
 	}
-
-	public String getFailedBuildsTree(int tabLevel) {
-		String ret = "";
-		Iterator<String> theKeys = failureCauses.keySet().iterator();
-		while (theKeys.hasNext()) {
-			ret = ret + "\n" + failureCauses.get(theKeys.next()).getFailedBuildsTree(tabLevel);
-		}
-		return ret;
-	}
+	
 }

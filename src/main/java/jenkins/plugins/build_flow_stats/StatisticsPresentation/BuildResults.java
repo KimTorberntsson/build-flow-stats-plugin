@@ -1,6 +1,5 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.*;
 import java.text.DecimalFormat;
 
 public class BuildResults {
@@ -26,17 +25,9 @@ public class BuildResults {
 		totalbuilds ++;
 	}
 
-	public int getSuccesses() {
-		return successes;
-	}
-
 	public void addFailure() {
 		failures ++;
 		totalbuilds ++;
-	}
-
-	public int getFailures() {
-		return failures;
 	}
 
 	public void addAbort() {
@@ -44,30 +35,14 @@ public class BuildResults {
 		totalbuilds ++;
 	}
 
-	public int getAborts() {
-		return aborts;
-	}
-
 	public void addUnstable() {
 		unstables ++;
 		totalbuilds ++;
 	}
 
-	public int getUnstables() {
-		return unstables;
-	}
-
 	public void addNoBuild() {
 		nobuilds ++;
 		totalbuilds ++;
-	}
-
-	public int getNoBuild() {
-		return nobuilds;
-	}
-
-	public int getTotalBuilds() {
-		return totalbuilds;
 	}
 
 	public double getFailureRate() {
@@ -79,8 +54,8 @@ public class BuildResults {
 	}
 
 	public String toString() {
-		return "[Successes: " + getSuccesses() + ", Failures: " + getFailures() + ", Aborts: " + getAborts() 
-		+ ", Unstables: " + getUnstables() + ", Not Built: " + getNoBuild() + ", Total Builds: " + getTotalBuilds() 
+		return "[Successes: " + successes + ", Failures: " + failures + ", Aborts: " + aborts 
+		+ ", Unstables: " + unstables + ", Not Built: " + nobuilds + ", Total Builds: " + totalbuilds 
 		+ ", Failure Rate: " + getFailureRate() + "%]";
 	}
 }

@@ -62,7 +62,7 @@ public class BuildFlowStatsPlugin extends Plugin {
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
 
-    public String getFailedBuildsTreeForView() {
+    public ArrayList<String> getFailedBuildsTreeForView() {
         
         String rootDir = Jenkins.getInstance().getRootDir().toString();
         //TODO: This should be made in a more general way based on user options.

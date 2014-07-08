@@ -2,6 +2,7 @@ package jenkins.plugins.build_flow_stats;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.ArrayList;
 
 public class JobList {
@@ -28,26 +29,17 @@ public class JobList {
 		return jobs.get(jobName);
 	}
 
-	public String toString() {
-		String ret = "";
+	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
 		Iterator<String> theKeys = jobs.keySet().iterator();
 		while (theKeys.hasNext()) {
-			ret = ret + jobs.get(theKeys.next()) + "\n";
+			jobs.get(theKeys.next()).getFailedBuildsTree(tabLevel, strings);
 		}
-		return ret;
-	}
-
-	public String getFailedBuildsTree(int tabLevel) {
-		String ret = "";
-		Iterator<String> theKeys = jobs.keySet().iterator();
-		while (theKeys.hasNext()) {
-			ret += "\n" + jobs.get(theKeys.next()).getFailedBuildsTree(tabLevel+1);
-		}
-		return ret;
 	} 
 
-	public String getFailedBuildsTree() {
-		return getFailedBuildsTree(0);
+	public ArrayList<String> getFailedBuildsTree() {
+		ArrayList<String> strings = new ArrayList<String>();
+		getFailedBuildsTree(0, strings);
+		return strings;
 	}
 
 }

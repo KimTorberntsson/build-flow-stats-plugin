@@ -51,4 +51,12 @@ public class XMLJobFactory {
 		}
 	}
 
+	public static String createTabLevelString(int i) {
+		String tabString = "";
+		while (i > 0) {
+			tabString += "\t";
+			i -= 1;
+		}
+		return tabString;
+	}
 }

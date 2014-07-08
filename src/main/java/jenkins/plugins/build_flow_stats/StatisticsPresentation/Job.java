@@ -1,6 +1,7 @@
 package jenkins.plugins.build_flow_stats;
 
 import org.w3c.dom.Node;
+import java.util.ArrayList;
 
 public abstract class Job {
 
@@ -10,19 +11,6 @@ public abstract class Job {
 	public Job(String jobName) {
 		this.jobName = jobName;
 		theResults = new BuildResults();
-	}
-
-	public String getName() {
-		return jobName;
-	}
-
-	public String getFailedBuildsTree(int tabLevel) {
-		String ret = "";
-		while (tabLevel > 0) {
-			ret = ret + "\t";
-			tabLevel = tabLevel - 1;
-		}
-		return ret + jobName + " " + theResults;
 	}
 
 	public void addResultForBuild(String resultString) {
@@ -40,5 +28,10 @@ public abstract class Job {
 	}
 
 	public abstract void addBuildFromXML(Node node);
+
+	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
+		strings.add(XMLJobFactory.createTabLevelString(tabLevel) 
+			+ jobName + " " + theResults);
+	}
 
 }
