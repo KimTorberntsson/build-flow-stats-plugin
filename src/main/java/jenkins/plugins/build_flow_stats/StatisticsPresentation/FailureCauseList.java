@@ -1,6 +1,8 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class FailureCauseList {
 	

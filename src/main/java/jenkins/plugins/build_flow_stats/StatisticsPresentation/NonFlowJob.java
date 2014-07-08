@@ -17,29 +17,23 @@ public class NonFlowJob extends Job {
 		failureCauses.addFailureCauseForBuild(failureCause, buildNumber);
 	}
 
+	public void addBuildFromXML(Node nonFlowBuildNode) {
+		Element nonFlowBuildElement = (Element) nonFlowBuildNode;
+		String result = nonFlowBuildElement.getElementsByTagName("Result").item(0).getTextContent();
+		addResultForBuild(result);
+		if (!result.equals("SUCCESS")) {
+			String failureCause = nonFlowBuildElement.getElementsByTagName("FailureCause").item(0).getTextContent();
+			String buildNumber = nonFlowBuildElement.getElementsByTagName("BuildNumber").item(0).getTextContent();
+			addFailureCauseForBuild(failureCause, buildNumber);
+		}	
+	}
+
 	public String toString() {
 		return jobName + "\n" + failureCauses;
 	}
 
 	public String getFailedBuildsTree(int tabLevel) {
 		return super.getFailedBuildsTree(tabLevel) + failureCauses.getFailedBuildsTree(tabLevel+1);
-	}
-
-	public void addBuildToJob(String failureCause, String buildNumber, String resultString) {
-		addFailureCauseForBuild(failureCause, buildNumber);
-		addResultForBuild(resultString);
-	}
-
-	public void addBuildFromXML(Node nonFlowBuildNode) {
-		Element nonFlowBuildElement = (Element) nonFlowBuildNode;
-		String result = nonFlowBuildElement.getElementsByTagName("Result").item(0).getTextContent();
-		if (result.equals("SUCCESS")) {
-			addResultForBuild(result);
-		} else {
-			String buildNumber = nonFlowBuildElement.getElementsByTagName("BuildNumber").item(0).getTextContent();
-			String failureCause = nonFlowBuildElement.getElementsByTagName("FailureCause").item(0).getTextContent();
-			addBuildToJob(failureCause, buildNumber, result);
-		}	
 	}
 		
 }

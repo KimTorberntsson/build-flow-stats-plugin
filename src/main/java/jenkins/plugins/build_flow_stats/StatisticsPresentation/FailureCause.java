@@ -1,6 +1,6 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class FailureCause {
 	
@@ -12,7 +12,7 @@ public class FailureCause {
 		builds = new ArrayList<String>();
 	}
 
-	public FailureCause(String failureCauseName,String buildNumber) {
+	public FailureCause(String failureCauseName, String buildNumber) {
 		this(failureCauseName);
 		builds.add(buildNumber);
 	}
