@@ -26,10 +26,10 @@ public class FailureCauseList {
 		return list;
 	}
 
-	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
+	public void createBuildTree(int tabLevel, BuildTree buildTree) {
 		Iterator<FailureCause> iterator = getFailureCausesInSortedList().iterator();
 		while (iterator.hasNext()) {
-			iterator.next().createBuildsTree(tabLevel, strings);
+			iterator.next().createBuildTree(tabLevel, buildTree);
 		}
 	}
 	

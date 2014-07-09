@@ -24,9 +24,9 @@ public class NonFlowJob extends Job {
 		}	
 	}
 
-	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
-		super.createBuildsTree(tabLevel, strings);
-		failureCauses.createBuildsTree(tabLevel+1, strings);
+	public void createBuildTree(int tabLevel, BuildTree buildTree) {
+		super.createBuildTree(tabLevel, buildTree);
+		failureCauses.createBuildTree(tabLevel+1, buildTree);
 	}
 		
 }

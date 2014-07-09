@@ -62,14 +62,14 @@ public class BuildFlowStatsPlugin extends Plugin {
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
 
-    public ArrayList<BuildTreeElement> getBuildsTree() {
+    public BuildTree getBuildsTree() {
         String rootDir = Jenkins.getInstance().getRootDir().toString();
         
         //TODO: This should be made in a more general way based on user options.
         String filePath = rootDir + "/userContent/testcases_statistics/Builds-2014-06-18.xml";
 
         JobList allJobs = XMLJobFactory.getAllJobsFromFile(filePath);
-        return allJobs.createBuildsTree();
+        return allJobs.createBuildTree();
     }
 
 }

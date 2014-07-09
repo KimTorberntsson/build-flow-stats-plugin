@@ -29,8 +29,8 @@ public abstract class Job {
 
 	public abstract void addBuildFromXML(Node node);
 
-	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
-		strings.add(new BuildTreeElement("\n" + XMLJobFactory.createTabLevelString(tabLevel) + jobName + " " + theResults));
+	public void createBuildTree(int tabLevel, BuildTree buildTree) {
+		buildTree.add(new BuildTreeJob("\n" + XMLJobFactory.createTabLevelString(tabLevel) + jobName, "" + theResults));
 	}
 
 }

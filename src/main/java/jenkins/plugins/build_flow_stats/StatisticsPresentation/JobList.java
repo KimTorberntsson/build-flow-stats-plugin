@@ -1,7 +1,7 @@
 package jenkins.plugins.build_flow_stats;
 
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
@@ -10,7 +10,7 @@ public class JobList {
 	private Map<String, Job> jobs;
 
 	public JobList() {
-		jobs = new HashMap<String, Job>();
+		jobs = new TreeMap<String, Job>();
 	}
 
 	public void addFlowJob(String flowJobName) {
@@ -29,17 +29,17 @@ public class JobList {
 		return jobs.get(jobName);
 	}
 
-	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
+	public void createBuildTree(int tabLevel, BuildTree buildTree) {
 		Iterator<String> theKeys = jobs.keySet().iterator();
 		while (theKeys.hasNext()) {
-			jobs.get(theKeys.next()).createBuildsTree(tabLevel, strings);
+			jobs.get(theKeys.next()).createBuildTree(tabLevel, buildTree);
 		}
 	} 
 
-	public ArrayList<BuildTreeElement> createBuildsTree() {
-		ArrayList<BuildTreeElement> treeElements = new ArrayList<BuildTreeElement>();
-		createBuildsTree(0, treeElements);
-		return treeElements;
+	public BuildTree createBuildTree() {
+		BuildTree buildTree = new BuildTree();
+		createBuildTree(0, buildTree);
+		return buildTree;
 	}
 
 }

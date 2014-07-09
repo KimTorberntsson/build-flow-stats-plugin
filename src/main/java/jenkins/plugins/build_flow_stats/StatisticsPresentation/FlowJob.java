@@ -27,8 +27,8 @@ public class FlowJob extends Job {
 		XMLJobFactory.addBuildsFromNode(flowBuildNode, subJobs);
 	}
 
-	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
-		super.createBuildsTree(tabLevel, strings);
-		subJobs.createBuildsTree(tabLevel+1, strings);
+	public void createBuildTree(int tabLevel, BuildTree buildTree) {
+		super.createBuildTree(tabLevel, buildTree);
+		subJobs.createBuildTree(tabLevel+1, buildTree);
 	}
 }

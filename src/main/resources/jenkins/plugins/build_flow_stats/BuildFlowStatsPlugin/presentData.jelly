@@ -19,13 +19,13 @@
 		<label>Presenting data for: ${presentDataOptions.jobName}</label>
 
 		<h2>Job Builds</h2>
-		<j:forEach var="buildElement" items="${buildsTree}">
+		<j:forEach var="buildElement" items="${buildsTree.elements}">
 			<j:choose>
-				<j:when test="${buildElement.hasBuilds}">
-					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.info} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
+				<j:when test="${buildElement.isBuildTreeJob}">
+					<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.jobName} ${buildElement.buildResults}</pre>
 				</j:when>
 				<j:otherwise>
-					<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.info}</pre>
+					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.failureCauseName} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 				</j:otherwise>
 			</j:choose>
 		</j:forEach>
