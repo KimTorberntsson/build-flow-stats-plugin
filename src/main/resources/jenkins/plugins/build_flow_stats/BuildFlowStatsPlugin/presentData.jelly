@@ -11,7 +11,7 @@
   </l:side-panel>
 
 	<l:main-panel>
-		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
+		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/>${%Build Flow Stats}</h1>
 		<hr/>
 		<h1>${%Data Presentation}</h1>
 		<label>Presenting data for the ${presentDataOptions.range} last ${presentDataOptions.rangeUnits}</label>
@@ -19,9 +19,17 @@
 		<label>Presenting data for: ${presentDataOptions.jobName}</label>
 
 		<h2>Job Builds</h2>
-		<j:forEach var="string" items="${failedBuildsTreeForView}">
-			<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${string}</pre>
+		<j:forEach var="buildElement" items="${buildsTree}">
+			<j:choose>
+				<j:when test="${buildElement.hasBuilds}">
+					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.info} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
+				</j:when>
+				<j:otherwise>
+					<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.info}</pre>
+				</j:otherwise>
+			</j:choose>
 		</j:forEach>
+		
 	</l:main-panel>
 
 </l:layout> 

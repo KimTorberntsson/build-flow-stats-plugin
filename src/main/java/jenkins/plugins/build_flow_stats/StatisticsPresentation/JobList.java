@@ -29,17 +29,17 @@ public class JobList {
 		return jobs.get(jobName);
 	}
 
-	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
+	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
 		Iterator<String> theKeys = jobs.keySet().iterator();
 		while (theKeys.hasNext()) {
-			jobs.get(theKeys.next()).getFailedBuildsTree(tabLevel, strings);
+			jobs.get(theKeys.next()).createBuildsTree(tabLevel, strings);
 		}
 	} 
 
-	public ArrayList<String> getFailedBuildsTree() {
-		ArrayList<String> strings = new ArrayList<String>();
-		getFailedBuildsTree(0, strings);
-		return strings;
+	public ArrayList<BuildTreeElement> createBuildsTree() {
+		ArrayList<BuildTreeElement> treeElements = new ArrayList<BuildTreeElement>();
+		createBuildsTree(0, treeElements);
+		return treeElements;
 	}
 
 }

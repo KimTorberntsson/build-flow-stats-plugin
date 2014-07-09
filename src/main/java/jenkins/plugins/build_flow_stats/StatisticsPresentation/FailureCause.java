@@ -4,10 +4,12 @@ import java.util.ArrayList;
 
 public class FailureCause {
 	
+	private String jobName;
 	private String failureCauseName;
 	private ArrayList<String> builds;
 
-	public FailureCause(String failureCauseName, String buildNumber) {
+	public FailureCause(String jobName, String failureCauseName, String buildNumber) {
+		this.jobName = jobName;
 		this.failureCauseName = failureCauseName;
 		builds = new ArrayList<String>();
 		builds.add(buildNumber);
@@ -17,9 +19,12 @@ public class FailureCause {
 		builds.add(buildNumber);
 	}
 
-	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
-		strings.add(XMLJobFactory.createTabLevelString(tabLevel) + builds.size() 
-			+ "st. " + failureCauseName + " " + builds);
+	public ArrayList<String> getBuilds() {
+		return builds;
+	}
+
+	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
+		strings.add(new BuildTreeElement(jobName, "\n" + XMLJobFactory.createTabLevelString(tabLevel) + failureCauseName, builds));
 	}
 	
 }

@@ -1,6 +1,6 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.*;
+import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
@@ -10,11 +10,7 @@ public class NonFlowJob extends Job {
 
 	public NonFlowJob(String jobName) {
 		super(jobName);
-		failureCauses = new FailureCauseList();
-	}
-
-	public void addFailureCauseForBuild(String failureCause, String buildNumber) {
-		failureCauses.addFailureCauseForBuild(failureCause, buildNumber);
+		failureCauses = new FailureCauseList(jobName);
 	}
 
 	public void addBuildFromXML(Node nonFlowBuildNode) {
@@ -24,13 +20,13 @@ public class NonFlowJob extends Job {
 		if (!result.equals("SUCCESS")) {
 			String failureCause = nonFlowBuildElement.getElementsByTagName("FailureCause").item(0).getTextContent();
 			String buildNumber = nonFlowBuildElement.getElementsByTagName("BuildNumber").item(0).getTextContent();
-			addFailureCauseForBuild(failureCause, buildNumber);
+			failureCauses.addFailureCauseForBuild(failureCause, buildNumber);
 		}	
 	}
 
-	public void getFailedBuildsTree(int tabLevel, ArrayList<String> strings) {
-		super.getFailedBuildsTree(tabLevel, strings);
-		failureCauses.getFailedBuildsTree(tabLevel+1, strings);
+	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
+		super.createBuildsTree(tabLevel, strings);
+		failureCauses.createBuildsTree(tabLevel+1, strings);
 	}
 		
 }
