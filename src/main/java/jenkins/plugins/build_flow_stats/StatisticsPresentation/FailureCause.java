@@ -23,6 +23,10 @@ public class FailureCause {
 		return builds;
 	}
 
+	public int getNumberOfBuilds() {
+		return builds.size();
+	}
+
 	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
 		strings.add(new BuildTreeElement(jobName, "\n" + XMLJobFactory.createTabLevelString(tabLevel) + failureCauseName, builds));
 	}

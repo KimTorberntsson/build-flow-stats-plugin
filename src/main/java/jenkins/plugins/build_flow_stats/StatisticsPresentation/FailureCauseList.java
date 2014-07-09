@@ -1,9 +1,6 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.ArrayList;
+import java.util.*;
 
 public class FailureCauseList {
 	
@@ -23,10 +20,16 @@ public class FailureCauseList {
 		}
 	}
 
+	public List<FailureCause> getFailureCausesInSortedList() {
+		List<FailureCause> list = new ArrayList<FailureCause>(failureCauses.values());
+		Collections.sort(list, new CompareFailureCausesBasedOnNumberOfBuilds());
+		return list;
+	}
+
 	public void createBuildsTree(int tabLevel, ArrayList<BuildTreeElement> strings) {
-		Iterator<String> theKeys = failureCauses.keySet().iterator();
-		while (theKeys.hasNext()) {
-			failureCauses.get(theKeys.next()).createBuildsTree(tabLevel, strings);
+		Iterator<FailureCause> iterator = getFailureCausesInSortedList().iterator();
+		while (iterator.hasNext()) {
+			iterator.next().createBuildsTree(tabLevel, strings);
 		}
 	}
 	
