@@ -22,10 +22,10 @@
 		<j:forEach var="buildElement" items="${buildsTree.elements}">
 			<j:choose>
 				<j:when test="${buildElement.isBuildTreeJob}">
-					<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.jobName} ${buildElement.buildResults}</pre>
+					<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.string}</pre>
 				</j:when>
 				<j:otherwise>
-					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.failureCauseName} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
+					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.string} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 				</j:otherwise>
 			</j:choose>
 		</j:forEach>

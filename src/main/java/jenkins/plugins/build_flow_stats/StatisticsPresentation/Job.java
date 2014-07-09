@@ -6,31 +6,31 @@ import java.util.ArrayList;
 public abstract class Job {
 
 	protected String jobName;
-	protected BuildResults theResults;
+	protected BuildResults buildResults;
 
 	public Job(String jobName) {
 		this.jobName = jobName;
-		theResults = new BuildResults();
+		buildResults = new BuildResults();
 	}
 
 	public void addResultForBuild(String resultString) {
 		if (resultString.equals("SUCCESS")) {
-			theResults.addSuccess();
+			buildResults.addSuccess();
 		} else if (resultString.equals("UNSTABLE")) {
-			theResults.addUnstable();
+			buildResults.addUnstable();
 		} else if (resultString.equals("NOT_BUILT")) {
-			theResults.addNoBuild();
+			buildResults.addNoBuild();
 		} else if (resultString.equals("ABORTED")) {
-			theResults.addAbort();
+			buildResults.addAbort();
 		} else {
-			theResults.addFailure();
+			buildResults.addFailure();
 		}
 	}
 
 	public abstract void addBuildFromXML(Node node);
 
 	public void createBuildTree(int tabLevel, BuildTree buildTree) {
-		buildTree.add(new BuildTreeJob("\n" + XMLJobFactory.createTabLevelString(tabLevel) + jobName, "" + theResults));
+		buildTree.add(new BuildTreeJob(jobName, tabLevel, "" + buildResults));
 	}
 
 }

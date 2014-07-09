@@ -7,8 +7,8 @@ public class BuildTreeFailureCause extends BuildTreeElement {
 	private String failureCauseName;
 	private ArrayList<String> builds;
 
-	public BuildTreeFailureCause(String jobName, String failureCauseName, ArrayList<String> builds) {
-		super(jobName);
+	public BuildTreeFailureCause(String jobName, int tabLevel, String failureCauseName, ArrayList<String> builds) {
+		super(jobName, tabLevel);
 		this.failureCauseName = failureCauseName;
 		this.builds = builds;
 	}
@@ -25,7 +25,8 @@ public class BuildTreeFailureCause extends BuildTreeElement {
 		return builds;
 	}
 
-
-
+	public String getString() {
+		return tabLevelString + failureCauseName;
+	}
 
 }

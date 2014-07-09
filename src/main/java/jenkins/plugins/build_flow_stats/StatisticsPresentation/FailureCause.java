@@ -28,7 +28,7 @@ public class FailureCause {
 	}
 
 	public void createBuildTree(int tabLevel, BuildTree buildTree) {
-		buildTree.add(new BuildTreeFailureCause(jobName, "\n" + XMLJobFactory.createTabLevelString(tabLevel) + failureCauseName, builds));
+		buildTree.add(new BuildTreeFailureCause(jobName, tabLevel, failureCauseName, builds));
 	}
 	
 }
