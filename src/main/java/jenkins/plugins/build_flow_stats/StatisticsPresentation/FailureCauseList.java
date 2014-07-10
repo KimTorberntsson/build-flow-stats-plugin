@@ -31,9 +31,24 @@ public class FailureCauseList {
 		}
 	}
 
+	public void createBuildTree(int tabLevel, BuildTree buildTree, int maxElements) {
+		Iterator<FailureCause> iterator = getFailureCausesInSortedList().iterator();
+		int elementCount = 0;
+		while (iterator.hasNext() && elementCount < maxElements) {
+			iterator.next().createBuildTree(tabLevel, buildTree);
+			elementCount++;
+		}
+	}
+
 	public BuildTree createBuildTree() {
 		BuildTree buildTree = new BuildTree();
 		createBuildTree(0, buildTree);
+		return buildTree;
+	}
+
+	public BuildTree createBuildTree(int maxElements) {
+		BuildTree buildTree = new BuildTree();
+		createBuildTree(0, buildTree, maxElements);
 		return buildTree;
 	}
 	

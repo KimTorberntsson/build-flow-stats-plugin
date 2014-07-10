@@ -31,7 +31,7 @@ public class XMLJobFactory {
 			e.printStackTrace();
 		}
 
-		BuildTree[] presentationData = { allJobs.createBuildTree(), allFailureCauses.createBuildTree() };
+		BuildTree[] presentationData = { allJobs.createBuildTree(), allFailureCauses.createBuildTree(10) };
 		return presentationData; 
 	}
 

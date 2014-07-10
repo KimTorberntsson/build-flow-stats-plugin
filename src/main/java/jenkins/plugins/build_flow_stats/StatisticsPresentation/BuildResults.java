@@ -54,8 +54,9 @@ public class BuildResults {
 	}
 
 	public String toString() {
-		return "[Successes: " + successes + ", Failures: " + failures + ", Aborts: " + aborts 
-		+ ", Unstables: " + unstables + ", Not Built: " + nobuilds + ", Total Builds: " + totalbuilds 
+		return "[Total Builds: " + totalbuilds + ", Successes: " + successes 
+		+ ", Failures: " + failures + ", Aborts: "+ aborts 
+		+ ", Unstables: " + unstables + ", Not Built: " + nobuilds 
 		+ ", Failure Rate: " + getFailureRate() + "%]";
 	}
 }
