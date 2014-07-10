@@ -10,7 +10,7 @@ public class NonFlowJob extends Job {
 
 	public NonFlowJob(String jobName) {
 		super(jobName);
-		failureCauses = new FailureCauseList(jobName);
+		failureCauses = new FailureCauseList();
 	}
 
 	public void addBuildFromXML(Node nonFlowBuildNode, FailureCauseList allFailureCauses) {
@@ -20,8 +20,8 @@ public class NonFlowJob extends Job {
 		if (!result.equals("SUCCESS")) {
 			String failureCause = nonFlowBuildElement.getElementsByTagName("FailureCause").item(0).getTextContent();
 			String buildNumber = nonFlowBuildElement.getElementsByTagName("BuildNumber").item(0).getTextContent();
-			failureCauses.addFailureCauseForBuild(failureCause, buildNumber);
-			allFailureCauses.addFailureCauseForBuild(failureCause, buildNumber);
+			failureCauses.addFailureCauseForBuild(jobName, failureCause, buildNumber);
+			allFailureCauses.addFailureCauseForBuild(jobName, failureCause, buildNumber);
 		}	
 	}
 

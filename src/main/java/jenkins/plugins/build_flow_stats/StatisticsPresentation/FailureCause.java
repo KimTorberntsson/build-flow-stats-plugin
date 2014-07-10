@@ -4,22 +4,20 @@ import java.util.ArrayList;
 
 public class FailureCause {
 	
-	private String jobName;
 	private String failureCauseName;
-	private ArrayList<String> builds;
+	private ArrayList<FailureBuild> builds;
 
 	public FailureCause(String jobName, String failureCauseName, String buildNumber) {
-		this.jobName = jobName;
 		this.failureCauseName = failureCauseName;
-		builds = new ArrayList<String>();
-		builds.add(buildNumber);
+		builds = new ArrayList<FailureBuild>();
+		addBuild(jobName, buildNumber);
 	}
 
-	public void addBuild(String buildNumber) {
-		builds.add(buildNumber);
+	public void addBuild(String jobName, String buildNumber) {
+		builds.add(new FailureBuild(jobName, buildNumber));
 	}
 
-	public ArrayList<String> getBuilds() {
+	public ArrayList<FailureBuild> getBuilds() {
 		return builds;
 	}
 
@@ -28,7 +26,7 @@ public class FailureCause {
 	}
 
 	public void createBuildTree(int tabLevel, BuildTree buildTree) {
-		buildTree.add(new BuildTreeFailureCause(jobName, tabLevel, failureCauseName, builds));
+		buildTree.add(new BuildTreeFailureCause(tabLevel, failureCauseName, builds));
 	}
 	
 }

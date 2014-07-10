@@ -13,7 +13,7 @@ public class XMLJobFactory {
 	public static BuildTree[] getPresentationDataFromFile(String fileName) {
 		
 		JobList allJobs = new JobList();
-		FailureCauseList allFailureCauses = new FailureCauseList("All Failure Causes");
+		FailureCauseList allFailureCauses = new FailureCauseList();
 
 		try {
 			File xmlFile = new File(fileName);

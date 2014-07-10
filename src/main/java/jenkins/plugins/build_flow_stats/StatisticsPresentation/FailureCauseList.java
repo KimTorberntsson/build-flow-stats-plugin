@@ -4,19 +4,17 @@ import java.util.*;
 
 public class FailureCauseList {
 	
-	private String jobName;
 	private Map<String, FailureCause> failureCauses;
 
-	public FailureCauseList(String jobName) {
-		this.jobName = jobName;
+	public FailureCauseList() {
 		failureCauses = new HashMap<String, FailureCause>();
 	}
 
-	public void addFailureCauseForBuild(String failureCause, String buildNumber) {
-		if (failureCauses.isEmpty() || !failureCauses.containsKey(failureCause)) {
-			failureCauses.put(failureCause, new FailureCause(jobName, failureCause, buildNumber));
+	public void addFailureCauseForBuild(String jobName, String failureCauseName, String buildNumber) {
+		if (failureCauses.isEmpty() || !failureCauses.containsKey(failureCauseName)) {
+			failureCauses.put(failureCauseName, new FailureCause(jobName, failureCauseName, buildNumber));
 		} else {
-			failureCauses.get(failureCause).addBuild(buildNumber);
+			failureCauses.get(failureCauseName).addBuild(jobName, buildNumber);
 		}
 	}
 

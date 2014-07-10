@@ -5,10 +5,10 @@ import java.util.ArrayList;
 public class BuildTreeFailureCause extends BuildTreeElement {
 
 	private String failureCauseName;
-	private ArrayList<String> builds;
+	private ArrayList<FailureBuild> builds;
 
-	public BuildTreeFailureCause(String jobName, int tabLevel, String failureCauseName, ArrayList<String> builds) {
-		super(jobName, tabLevel);
+	public BuildTreeFailureCause(int tabLevel, String failureCauseName, ArrayList<FailureBuild> builds) {
+		super(tabLevel);
 		this.failureCauseName = failureCauseName;
 		this.builds = builds;
 	}
@@ -21,7 +21,7 @@ public class BuildTreeFailureCause extends BuildTreeElement {
 		return failureCauseName;
 	}
 
-	public ArrayList<String> getBuilds() {
+	public ArrayList<FailureBuild> getBuilds() {
 		return builds;
 	}
 

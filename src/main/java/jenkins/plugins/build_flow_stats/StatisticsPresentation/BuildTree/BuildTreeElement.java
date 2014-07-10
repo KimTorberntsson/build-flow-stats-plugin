@@ -2,16 +2,10 @@ package jenkins.plugins.build_flow_stats;
 
 public abstract class BuildTreeElement {
 	
-	protected String jobName;
 	protected String tabLevelString;
 
-	public BuildTreeElement(String jobName, int tabLevel) {
-		this.jobName = jobName;
+	public BuildTreeElement(int tabLevel) {
 		tabLevelString = createTabLevelString(tabLevel);
-	}
-
-	public String getJobName() {
-		return jobName;
 	}
 
 	public String createTabLevelString(int i) {
