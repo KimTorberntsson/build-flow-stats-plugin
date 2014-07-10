@@ -1,41 +1,40 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+	<l:layout title="${%Flow Build Stats Plugin}" permission="${it.requiredPermission}">
 
-<l:layout title="${%Flow Build Stats Plugin}" permission="${it.requiredPermission}">
+		<l:side-panel>
+	    <l:tasks>
+	      <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
+				<l:task icon="images/24x24/up.gif" href="${rootURL}/plugin/build-flow-stats" title="${%Back to Build Flow Stats}" />
+	    </l:tasks>
+	  </l:side-panel>
 
-	<l:side-panel>
-    <l:tasks>
-      <l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
-			<l:task icon="images/24x24/up.gif" href="${rootURL}/plugin/build-flow-stats" title="${%Back to Build Flow Stats}" />
-    </l:tasks>
-  </l:side-panel>
+		<l:main-panel>
+			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${% Build Flow Stats} </h1>
+			<hr/>
+			<h1>${%Data Presentation Options}</h1>
+			<hr/>
+			<br/>
+			<form action="presentData">
+			<label>Present data for builds for the last: </label>
+			<input type="text" id="presentData_range" name="range" size="5" value="2"/>
+			<select id="presentBuild_rangeUnits" name="rangeUnits">
+				<option>Days</option>
+				<option selected="true">Weeks</option>
+	     	<option>Months</option>
+				<option>Years</option>
+			</select>
+			<br/>
+			<br/>
+			<label>Included Job: </label>
+			<input type="text" id ="searchBuild_jobName" name="jobName" size="20"/>
+			<br/>
+			<br/>
+			<input type="submit" class="submit-button" value="${%Present Data}" name="Submit" />
+			</form>
+			<br/>
+			<hr/>
 
-	<l:main-panel>
-		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${% Build Flow Stats} </h1>
-		<hr/>
-		<h1>${%Data Presentation Options}</h1>
-		<hr/>
-		<br/>
-		<form action="presentData">
-		<label>Present data for builds for the last: </label>
-		<input type="text" id="presentData_range" name="range" size="5" value="2"/>
-		<select id="presentBuild_rangeUnits" name="rangeUnits">
-			<option>Days</option>
-			<option selected="true">Weeks</option>
-     	<option>Months</option>
-			<option>Years</option>
-		</select>
-		<br/>
-		<br/>
-		<label>Included Job: </label>
-		<input type="text" id ="searchBuild_jobName" name="jobName" size="20"/>
-		<br/>
-		<br/>
-		<input type="submit" class="submit-button" value="${%Present Data}" name="Submit" />
-		</form>
-		<br/>
-		<hr/>
-
-	</l:main-panel>
-</l:layout> 
+		</l:main-panel>
+	</l:layout> 
 </j:jelly>
