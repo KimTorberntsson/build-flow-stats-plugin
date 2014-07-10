@@ -11,7 +11,7 @@
   </l:side-panel>
 
 	<l:main-panel>
-		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${%Build Flow Stats} </h1>
+		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${% Build Flow Stats} </h1>
 		<hr/>
 		<h1>${%Data Presentation Options}</h1>
 		<hr/>

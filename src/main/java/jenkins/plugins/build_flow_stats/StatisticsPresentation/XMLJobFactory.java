@@ -10,9 +10,10 @@ import java.io.File;
 
 public class XMLJobFactory {
 	
-	public static JobList getAllJobsFromFile(String fileName) {
+	public static BuildTree[] getPresentationDataFromFile(String fileName) {
 		
 		JobList allJobs = new JobList();
+		FailureCauseList allFailureCauses = new FailureCauseList("All Failure Causes");
 
 		try {
 			File xmlFile = new File(fileName);
@@ -24,16 +25,17 @@ public class XMLJobFactory {
 
 			Element rootElement = doc.getDocumentElement();
 
-			addBuildsFromNode(rootElement, allJobs);
+			addBuildsFromNode(rootElement, allJobs, allFailureCauses);
 
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return allJobs;
+		BuildTree[] presentationData = { allJobs.createBuildTree(), allFailureCauses.createBuildTree() };
+		return presentationData; 
 	}
 
-	public static void addBuildsFromNode(Node node, JobList jobs) {
+	public static void addBuildsFromNode(Node node, JobList jobs, FailureCauseList allFailureCauses) {
 		NodeList childNodes = node.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i ++) {
 			Node rootElementChild = childNodes.item(i);
@@ -41,12 +43,12 @@ public class XMLJobFactory {
 				Element flowBuildElement = (Element) rootElementChild;
 				String jobName = flowBuildElement.getElementsByTagName("JobName").item(0).getTextContent();
 				jobs.addFlowJob(jobName);
-				jobs.getJob(jobName).addBuildFromXML(rootElementChild);
+				jobs.getJob(jobName).addBuildFromXML(rootElementChild, allFailureCauses);
 			} else if (rootElementChild.getNodeName().equals("Build")) {
 				Element nonFlowBuildElement = (Element) rootElementChild;
 				String jobName = nonFlowBuildElement.getElementsByTagName("JobName").item(0).getTextContent();
 				jobs.addNonFlowJob(jobName);
-				jobs.getJob(jobName).addBuildFromXML(rootElementChild);
+				jobs.getJob(jobName).addBuildFromXML(rootElementChild, allFailureCauses);
 			}
 		}
 	}

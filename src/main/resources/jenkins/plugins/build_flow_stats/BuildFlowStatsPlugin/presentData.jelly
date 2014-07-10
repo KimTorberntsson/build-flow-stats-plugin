@@ -11,7 +11,7 @@
   </l:side-panel>
 
 	<l:main-panel>
-		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/>${%Build Flow Stats}</h1>
+		<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/>${% Build Flow Stats}</h1>
 		<hr/>
 		<h1>${%Data Presentation}</h1>
 		<label>Presenting data for the ${presentDataOptions.range} last ${presentDataOptions.rangeUnits}</label>
@@ -28,6 +28,12 @@
 					<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.string} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${buildElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 				</j:otherwise>
 			</j:choose>
+		</j:forEach>
+		<br/>
+
+		<h2>Most Common Failure Causes</h2>
+		<j:forEach var="failureCauseElement" items="${allFailureCauses.elements}">
+			<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${failureCauseElement.string} [ <j:forEach var="build" items="${failureCauseElement.builds}"><a href="${rootURL}/job/${failureCauseElement.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 		</j:forEach>
 		
 	</l:main-panel>

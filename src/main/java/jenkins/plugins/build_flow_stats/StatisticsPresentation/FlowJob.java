@@ -21,10 +21,10 @@ public class FlowJob extends Job {
 		subJobs.addNonFlowJob(nonFlowJobName);
 	}
 
-	public void addBuildFromXML(Node flowBuildNode) {
+	public void addBuildFromXML(Node flowBuildNode, FailureCauseList allFailureCauses) {
 		Element flowBuildElement = (Element) flowBuildNode;
 		addResultForBuild(flowBuildElement.getElementsByTagName("Result").item(0).getTextContent());
-		XMLJobFactory.addBuildsFromNode(flowBuildNode, subJobs);
+		XMLJobFactory.addBuildsFromNode(flowBuildNode, subJobs, allFailureCauses);
 	}
 
 	public void createBuildTree(int tabLevel, BuildTree buildTree) {

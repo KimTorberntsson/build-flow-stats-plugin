@@ -32,5 +32,11 @@ public class FailureCauseList {
 			iterator.next().createBuildTree(tabLevel, buildTree);
 		}
 	}
+
+	public BuildTree createBuildTree() {
+		BuildTree buildTree = new BuildTree();
+		createBuildTree(0, buildTree);
+		return buildTree;
+	}
 	
 }

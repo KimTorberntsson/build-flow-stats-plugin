@@ -58,18 +58,20 @@ public class BuildFlowStatsPlugin extends Plugin {
 	public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		InputOptions presentDataOptions = new InputOptions(req);
 		req.setAttribute("presentDataOptions", presentDataOptions);
-        req.setAttribute("buildsTree", getBuildsTree());
+        BuildTree[] presentationData = getPresentationData();
+        req.setAttribute("buildsTree", presentationData[0]);
+        req.setAttribute("allFailureCauses", presentationData[1]);
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
 
-    public BuildTree getBuildsTree() {
+    public BuildTree[] getPresentationData() {
         String rootDir = Jenkins.getInstance().getRootDir().toString();
         
         //TODO: This should be made in a more general way based on user options.
         String filePath = rootDir + "/userContent/testcases_statistics/Builds-2014-06-18.xml";
 
-        JobList allJobs = XMLJobFactory.getAllJobsFromFile(filePath);
-        return allJobs.createBuildTree();
+        return XMLJobFactory.getPresentationDataFromFile(filePath);
+        
     }
 
 }

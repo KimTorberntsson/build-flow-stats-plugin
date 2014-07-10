@@ -27,7 +27,7 @@ public abstract class Job {
 		}
 	}
 
-	public abstract void addBuildFromXML(Node node);
+	public abstract void addBuildFromXML(Node node, FailureCauseList allFailureCauses);
 
 	public void createBuildTree(int tabLevel, BuildTree buildTree) {
 		buildTree.add(new BuildTreeJob(jobName, tabLevel, "" + buildResults));
