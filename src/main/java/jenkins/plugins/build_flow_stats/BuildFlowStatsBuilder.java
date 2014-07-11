@@ -1,5 +1,6 @@
 package jenkins.plugins.build_flow_stats;
 
+import java.io.PrintStream;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -30,7 +31,8 @@ public class BuildFlowStatsBuilder extends Builder {
 
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        listener.getLogger().println("Collecting data for " + job);
+        PrintStream stream = listener.getLogger();
+        StoreData.storeBuildInfoToXML(stream, job);
         return true;
     }
 
