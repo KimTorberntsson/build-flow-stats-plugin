@@ -33,4 +33,12 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.cloudbees.plugins</groupId>
+      <artifactId>build-flow-plugin</artifactId>
+      <version>0.12</version>
+    </dependency>
+  </dependencies>
+
 </project>

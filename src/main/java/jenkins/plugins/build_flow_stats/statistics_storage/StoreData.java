@@ -23,6 +23,10 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.cloudbees.plugins.flow.FlowRun;
+import com.cloudbees.plugins.flow.JobInvocation;
+import java.util.concurrent.ExecutionException;
+
 public class StoreData {
 
 	public static void storeBuildInfoToXML(PrintStream stream, String jobName) {
@@ -84,9 +88,10 @@ public class StoreData {
 
 	public static void writeBuildToXML(Document doc, Element parentElement, Build build) {
 		if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
+			FlowRun flowBuild = (FlowRun) build;
 			Element flowBuildElement = doc.createElement("FlowBuild");
 	    	parentElement.appendChild(flowBuildElement);
-			writeFlowBuildInfoToXML(doc, flowBuildElement, build);
+			writeFlowBuildInfoToXML(doc, flowBuildElement, flowBuild);
 		} else {
 	    	Element buildElement = doc.createElement("Build");
 	    	parentElement.appendChild(buildElement);
@@ -94,20 +99,22 @@ public class StoreData {
 		}
 	}
 
-	public static void writeFlowBuildInfoToXML(Document doc, Element flowBuildElement, Build flowBuild) {
+	public static void writeFlowBuildInfoToXML(Document doc, Element flowBuildElement, FlowRun flowBuild) {
 		addJobNameToXML(doc, flowBuildElement, flowBuild);
 		addBuildNumberToXML(doc, flowBuildElement, flowBuild);
 		addDateToXML(doc, flowBuildElement, flowBuild);
 		addResultToXML(doc, flowBuildElement, flowBuild);
-		/*
-		def set = flowBuild.getJobsGraph().vertexSet();
-		set.each {
-			def subbuild = it.getBuild()
-			if (subbuild != null && subbuild.getParent().getFullName() != flowBuild.getParent().getFullName()) {
-				writeBuildToXML(doc, flowBuildElement, subbuild);
-			}
+
+		Iterator<JobInvocation> subBuilds = flowBuild.getJobsGraph().vertexSet().iterator();
+		while (subBuilds.hasNext()) {
+			try {
+				Build subBuild = (Build) subBuilds.next().getBuild();
+				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
+					writeBuildToXML(doc, flowBuildElement, subBuild);
+				}
+			} catch (ExecutionException ee) {} //Fix the exception handling
+			catch (InterruptedException ie) {} //Fix the exception handling
 		}
-		*/
 	}
 
 	public static void writeBuildInfoToXML(Document doc, Element buildElement, Build build) {
