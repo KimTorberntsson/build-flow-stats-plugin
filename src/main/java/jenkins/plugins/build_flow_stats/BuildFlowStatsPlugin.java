@@ -68,7 +68,7 @@ public class BuildFlowStatsPlugin extends Plugin {
         String rootDir = Jenkins.getInstance().getRootDir().toString();
         
         //TODO: This should be made in a more general way based on user options.
-        String filePath = rootDir + "/userContent/testcases_statistics/Builds-2014-06-18.xml";
+        String filePath = rootDir + "/userContent/build-flow-stats/tn-delivery.xml";
 
         return XMLJobFactory.getPresentationDataFromFile(filePath);
         

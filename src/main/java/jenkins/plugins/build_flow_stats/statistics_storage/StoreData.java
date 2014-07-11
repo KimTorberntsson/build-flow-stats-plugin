@@ -2,6 +2,7 @@ package jenkins.plugins.build_flow_stats;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
 import jenkins.*;
 import jenkins.model.*;
@@ -26,11 +27,11 @@ public class StoreData {
 
 	public static void storeBuildInfoToXML(PrintStream stream, String jobName) {
 
-		stream.println("Collect and store data to XML-file from" + jobName);
+		stream.println("Collect and store data to XML-file from " + jobName);
 
-		// Create time object that points to the 00:00 of today
+		// TODO: This should also be configurable by the user
 		Calendar startDate = new GregorianCalendar();
-		startDate.add(Calendar.DAY_OF_MONTH, -12);
+		startDate.add(Calendar.DAY_OF_MONTH, -10);
 		Calendar endDate = new GregorianCalendar();
 
 		//Create path for storing data
@@ -39,11 +40,14 @@ public class StoreData {
 		String storePath = rootDir + "/userContent/build-flow-stats/";
 
 		//TODO: This should be made in a more general way with different names for different dates being generated automatically
-		String filename = "Builds-Plugin.xml";
+		String filename = jobName + ".xml";
 
 		//Create directories if they does not exist
 		//TODO:CHeck if this really is a good way to create the directories if they do not exist
 		new File(storePath).mkdirs();
+
+		// Get project object 
+		Project project = (Project) jenkins.getItem(jobName);;
 
 		try {
  			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -54,12 +58,11 @@ public class StoreData {
 			Element builds = doc.createElement("Builds");
 			doc.appendChild(builds);
 
-			//Adds the data as xml recursively
-			/*
-			project.getBuilds().byTimestamp(startDate.getTime(),endDate.getTime()).each {
-		  		writeBuildToXML(doc, builds, it);
-			}
-			*/
+			//Recursively add all builds from the job
+			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime().getTime(),endDate.getTime().getTime()).iterator();
+		  	while (runIterator.hasNext()) {
+		  		writeBuildToXML(doc, builds, runIterator.next());
+		  	}
 
 			// write the content into xml file
 			TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -77,5 +80,97 @@ public class StoreData {
   		} catch (TransformerException tfe) {
   			tfe.printStackTrace(stream);
   		}
+	}
+
+	public static void writeBuildToXML(Document doc, Element parentElement, Build build) {
+		if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
+			Element flowBuildElement = doc.createElement("FlowBuild");
+	    	parentElement.appendChild(flowBuildElement);
+			writeFlowBuildInfoToXML(doc, flowBuildElement, build);
+		} else {
+	    	Element buildElement = doc.createElement("Build");
+	    	parentElement.appendChild(buildElement);
+	    	writeBuildInfoToXML(doc, buildElement, build);
+		}
+	}
+
+	public static void writeFlowBuildInfoToXML(Document doc, Element flowBuildElement, Build flowBuild) {
+		addJobNameToXML(doc, flowBuildElement, flowBuild);
+		addBuildNumberToXML(doc, flowBuildElement, flowBuild);
+		addDateToXML(doc, flowBuildElement, flowBuild);
+		addResultToXML(doc, flowBuildElement, flowBuild);
+		/*
+		def set = flowBuild.getJobsGraph().vertexSet();
+		set.each {
+			def subbuild = it.getBuild()
+			if (subbuild != null && subbuild.getParent().getFullName() != flowBuild.getParent().getFullName()) {
+				writeBuildToXML(doc, flowBuildElement, subbuild);
+			}
+		}
+		*/
+	}
+
+	public static void writeBuildInfoToXML(Document doc, Element buildElement, Build build) {
+	  addJobNameToXML(doc, buildElement, build);
+	  addBuildNumberToXML(doc, buildElement, build);
+	  addDateToXML(doc, buildElement, build);
+	  addResultToXML(doc, buildElement, build);
+	  addFailureCauseToXML(doc, buildElement, build, build.getResult().toString());
+	}
+
+	public static void addJobNameToXML(Document doc, Element parentElement, Build build) {
+	  String jobName = build.getParent().getFullName();
+	  Element jobNameElement = doc.createElement("JobName");
+	  jobNameElement.appendChild(doc.createTextNode(jobName));
+	  parentElement.appendChild(jobNameElement);
+	}
+
+	public static void addBuildNumberToXML(Document doc, Element parentElement, Build build) {
+	  String buildNumber = "" + build.getNumber();
+	  Element buildNumberElement = doc.createElement("BuildNumber");
+	  buildNumberElement.appendChild(doc.createTextNode(buildNumber));
+	  parentElement.appendChild(buildNumberElement);
+	}
+
+	public static void addDateToXML(Document doc, Element parentElement, Build build) {
+	  String date = build.getTime().toString();
+	  Element dateElement = doc.createElement("Date");
+	  dateElement.appendChild(doc.createTextNode(date));
+	  parentElement.appendChild(dateElement);
+	}
+
+	public static void addResultToXML(Document doc, Element parentElement, Build build) {
+	  String result = build.getResult().toString();
+	  Element resultElement = doc.createElement("Result");
+	  resultElement.appendChild(doc.createTextNode(result));
+	  parentElement.appendChild(resultElement);
+	}
+
+	public static void addFailureCauseToXML(Document doc, Element parentElement, Build build, String result) {
+	  //The logs should eventually be analysed instead of this mumbojumbo of course
+	  if (!result.equals("SUCCESS")) {
+	    String failureCause;
+	    if (result.equals("UNSTABLE")) {
+	      failureCause = "Unstable Build";
+	    } else if (result.equals("NOT_BUILT")) {
+	      failureCause = "Not Built";
+	    } else if (result.equals("ABORTED")) {
+	      failureCause = "Aborted";
+	    } else {
+	      double random = Math.random();
+	      if (random < 0.25) {
+	        failureCause = "Temporary fail explanation 1"; 
+	      } else if (0.25 <= random && random < 0.5) {
+	        failureCause = "Temporary fail explanation 2"; 
+	      } else if (0.5 <= random && random < 0.75) {
+	        failureCause = "Temporary fail explanation 3"; 
+	      } else {
+	        failureCause = "Temporary fail explanation 4"; 
+	      }
+	    }
+	    Element failureCauseElement = doc.createElement("FailureCause");
+	    failureCauseElement.appendChild(doc.createTextNode(failureCause));
+	    parentElement.appendChild(failureCauseElement);
+	  }
 	}
 }
