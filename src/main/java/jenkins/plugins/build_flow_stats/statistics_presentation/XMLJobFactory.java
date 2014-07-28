@@ -10,25 +10,30 @@ import java.io.File;
 
 public class XMLJobFactory {
 	
-	public static BuildTree[] getPresentationDataFromFile(String fileName) {
+	public static BuildTree[] getPresentationDataFromFile(String filePath) {
 		
 		JobList allJobs = new JobList();
 		FailureCauseList allFailureCauses = new FailureCauseList();
 
-		try {
-			File xmlFile = new File(fileName);
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(xmlFile);
+		File jobFolder = new File(filePath);
+		String[] xmlFiles = jobFolder.list();
 
-			doc.getDocumentElement().normalize();
+		for (int i = 0; i < xmlFiles.length; i++) {
+			try {
+				File xmlFile = new File(filePath + "/" + xmlFiles[i]);
+				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+				Document doc = dBuilder.parse(xmlFile);
 
-			Element rootElement = doc.getDocumentElement();
+				doc.getDocumentElement().normalize();
 
-			addBuildsFromNode(rootElement, allJobs, allFailureCauses);
+				Element rootElement = doc.getDocumentElement();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+				addBuildsFromNode(rootElement, allJobs, allFailureCauses);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		BuildTree[] presentationData = { allJobs.createBuildTree(), allFailureCauses.createBuildTree(10) };

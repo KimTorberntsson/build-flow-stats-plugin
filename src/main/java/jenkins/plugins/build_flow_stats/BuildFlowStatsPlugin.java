@@ -7,7 +7,7 @@ import jenkins.model.*;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ManagementLink;
 
-import java.io.IOException;
+import java.io.*;
 import javax.servlet.ServletException;
 
 import org.kohsuke.stapler.StaplerResponse;
@@ -58,20 +58,27 @@ public class BuildFlowStatsPlugin extends Plugin {
 	public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		InputOptions presentDataOptions = new InputOptions(req);
 		req.setAttribute("presentDataOptions", presentDataOptions);
-        BuildTree[] presentationData = getPresentationData();
+        BuildTree[] presentationData = getPresentationData(presentDataOptions.getJobName());
         req.setAttribute("buildsTree", presentationData[0]);
         req.setAttribute("allFailureCauses", presentationData[1]);
     	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
     }
 
-    public BuildTree[] getPresentationData() {
+    public BuildTree[] getPresentationData(String jobName) {
         String rootDir = Jenkins.getInstance().getRootDir().toString();
         
         //TODO: This should be made in a more general way based on user options.
-        String filePath = rootDir + "/userContent/build-flow-stats/tn-delivery.xml";
+        String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
 
         return XMLJobFactory.getPresentationDataFromFile(filePath);
         
+    }
+
+    public String[] getStoredJobs() {
+        String rootDir = Jenkins.getInstance().getRootDir().toString();
+        String filePath = rootDir + "/userContent/build-flow-stats/";
+        File folder = new File(filePath);
+        return folder.list();
     }
 
 }

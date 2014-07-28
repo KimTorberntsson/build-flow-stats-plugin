@@ -21,13 +21,17 @@
 			<select id="presentBuild_rangeUnits" name="rangeUnits">
 				<option>Days</option>
 				<option selected="true">Weeks</option>
-	     	<option>Months</option>
+	     		<option>Months</option>
 				<option>Years</option>
 			</select>
 			<br/>
 			<br/>
 			<label>Included Job: </label>
-			<input type="text" id ="searchBuild_jobName" name="jobName" size="20"/>
+			<select id ="searchBuild_jobName" name="jobName">
+				<j:forEach var="job" items="${it.storedJobs}">
+				<option>${job}</option>
+				</j:forEach>
+			</select>
 			<br/>
 			<br/>
 			<input type="submit" class="submit-button" value="${%Present Data}" name="Submit" />

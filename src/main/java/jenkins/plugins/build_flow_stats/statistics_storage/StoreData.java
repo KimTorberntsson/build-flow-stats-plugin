@@ -1,8 +1,7 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.*;
+import java.text.SimpleDateFormat;
 
 import jenkins.*;
 import jenkins.model.*;
@@ -29,23 +28,25 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName, String firstDate) {
+	public static void storeBuildInfoToXML(PrintStream stream, String jobName, String startDateString) {
 
-		stream.println("Collect and store data to XML-file from " + jobName);
-		stream.println("Start date: " + firstDate);
+		stream.println("Collect and store data to XML-file for " + jobName);
 
-		// TODO: This should also be configurable by the user
-		Calendar startDate = new GregorianCalendar();
-		startDate.add(Calendar.DAY_OF_MONTH, -10);
+		String[] date = startDateString.split("-");
+        Calendar startDate = new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(date[3]), Integer.parseInt(date[4]));
 		Calendar endDate = new GregorianCalendar();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+		String endDateString = sdf.format(endDate.getTime());
+
+		stream.println("Collecting data from " + startDateString + " to " + endDateString);
 
 		//Create path for storing data
 		Jenkins jenkins = Jenkins.getInstance();
 		String rootDir = jenkins.getRootDir().toString();
-		String storePath = rootDir + "/userContent/build-flow-stats/";
+		String storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/";
 
 		//TODO: This should be made in a more general way with different names for different dates being generated automatically
-		String filename = jobName + ".xml";
+		String filename = endDateString + ".xml";
 
 		//Create directories if they does not exist
 		//TODO:CHeck if this really is a good way to create the directories if they do not exist

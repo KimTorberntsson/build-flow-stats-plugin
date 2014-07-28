@@ -1,6 +1,7 @@
 package jenkins.plugins.build_flow_stats;
 
 import java.io.*;
+import java.util.*;
 import java.util.Iterator;
 import org.kohsuke.stapler.*;
 import net.sf.json.JSONObject;

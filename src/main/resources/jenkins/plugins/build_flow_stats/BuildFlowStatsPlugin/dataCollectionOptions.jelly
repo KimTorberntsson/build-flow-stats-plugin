@@ -21,13 +21,13 @@
 			<select id="collectBuild_rangeUnits" name="rangeUnits">
 				<option>Days</option>
 				<option selected="true">Weeks</option>
-	     	<option>Months</option>
+	     		<option>Months</option>
 				<option>Years</option>
 			</select>
 			<br/>
 			<br/>
 			<label>Included Job: </label>
-			<input type="text" id ="collectBuild_jobName" name="jobName" size="20"/>
+			<select type="text" id ="collectBuild_jobName" name="jobName" size="20"/>
 			<br/>
 			<br/>
 			<input type="submit" class="submit-button" value="${%Submit}" name="Submit" />
