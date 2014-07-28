@@ -51,7 +51,7 @@ public class StoreData {
 		new File(storePath).mkdirs();
 
 		// Get project object 
-		Project project = (Project) jenkins.getItem(jobName);;
+		Project project = (Project) jenkins.getItem(jobName);
 
 		try {
  			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
