@@ -1,23 +1,16 @@
 package jenkins.plugins.build_flow_stats;
 
-import java.io.PrintStream;
+import java.io.*;
 import java.util.Iterator;
-import hudson.Extension;
-import hudson.Launcher;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
-import hudson.model.AbstractProject;
-import hudson.tasks.Builder;
-import hudson.tasks.BuildStepDescriptor;
-import hudson.util.ListBoxModel;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.*;
 import net.sf.json.JSONObject;
-
 import jenkins.*;
 import jenkins.model.*;
 import hudson.*;
 import hudson.model.*;
+import hudson.tasks.*;
+import hudson.util.*;
+import javax.servlet.ServletException;
 
 /**
  * This Builder stores information about flowbuilds into XML-files that can later be accessed
@@ -26,20 +19,26 @@ import hudson.model.*;
 public class BuildFlowStatsBuilder extends Builder {
 
     private final String job;
+    private final String startDate;
 
     @DataBoundConstructor
-    public BuildFlowStatsBuilder(String job) {
+    public BuildFlowStatsBuilder(String job, String startDate) {
         this.job = job;
+        this.startDate = startDate;
     }
 
     public String getJob() {
         return job;
     }
 
+    public String getStartDate() {
+        return startDate;
+    }
+
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         PrintStream stream = listener.getLogger();
-        StoreData.storeBuildInfoToXML(stream, job);
+        StoreData.storeBuildInfoToXML(stream, job, startDate);
         return true;
     }
 
@@ -67,6 +66,14 @@ public class BuildFlowStatsBuilder extends Builder {
                 }
             }
             return items;
+        }
+
+        public FormValidation doCheckStartDate(@QueryParameter String value) throws IOException, ServletException {
+            if (value.matches("\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}")) {
+                return FormValidation.ok();
+            } else {
+                return FormValidation.error("Wrong date format");
+            }
         }
     }
     

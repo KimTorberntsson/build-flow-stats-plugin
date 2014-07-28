@@ -29,9 +29,10 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName) {
+	public static void storeBuildInfoToXML(PrintStream stream, String jobName, String firstDate) {
 
 		stream.println("Collect and store data to XML-file from " + jobName);
+		stream.println("Start date: " + firstDate);
 
 		// TODO: This should also be configurable by the user
 		Calendar startDate = new GregorianCalendar();

@@ -5,4 +5,8 @@
 		<f:select />
 	</f:entry>
 
+	<f:entry field="startDate" title="StartDate: ">
+		<f:textbox />
+	</f:entry>
+
 </j:jelly>
