@@ -3,6 +3,8 @@ package jenkins.plugins.build_flow_stats;
 import java.io.*;
 import java.util.*;
 import java.util.Iterator;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import org.kohsuke.stapler.*;
 import net.sf.json.JSONObject;
 import jenkins.*;
@@ -21,11 +23,22 @@ public class BuildFlowStatsBuilder extends Builder {
 
     private final String job;
     private final String startDate;
+    private final Date startDateObject;
 
     @DataBoundConstructor
     public BuildFlowStatsBuilder(String job, String startDate) {
         this.job = job;
         this.startDate = startDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            try {
+                this.startDateObject = sdf.parse(startDate);
+            } catch (ParseException e) {
+                throw new RuntimeException("Could not parse start date");
+            }
+        } else {
+            throw new RuntimeException("Wrong format for start date");
+        }
     }
 
     public String getJob() {
@@ -39,7 +52,7 @@ public class BuildFlowStatsBuilder extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         PrintStream stream = listener.getLogger();
-        StoreData.storeBuildInfoToXML(stream, job, startDate);
+        StoreData.storeBuildInfoToXML(stream, job, startDateObject, startDate);
         return true;
     }
 

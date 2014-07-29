@@ -3,6 +3,7 @@ package jenkins.plugins.build_flow_stats;
 import java.util.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 import jenkins.*;
 import jenkins.model.*;
@@ -15,50 +16,44 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName, String startDateString) {
-
+	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Date startDateObject, String startDate) {
 		stream.println("Collect and store data to XML-file for " + jobName);
-
-		String[] date = startDateString.split("-");
-        Calendar startDate = new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]));
-		Calendar endDate = new GregorianCalendar();
+			
+		Date endDateObject = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-		String endDateString = sdf.format(endDate.getTime());
+		String endDate = sdf.format(endDateObject);
 
-		stream.println("Collecting data from " + startDateString + " to " + endDateString);
+		stream.println("Collecting data from " + startDate + " to " + endDate);
 
 		//Create path for storing data
 		Jenkins jenkins = Jenkins.getInstance();
 		String rootDir = jenkins.getRootDir().toString();
 		String storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/";
+		new File(storePath).mkdirs();
 
 		//TODO: This should be made in a more general way with different names for different dates being generated automatically
-		String filename = endDateString + ".xml";
-
-		//Create directories if they does not exist
-		//TODO:CHeck if this really is a good way to create the directories if they do not exist
-		new File(storePath).mkdirs();
+		String filename = endDate + ".xml";
 
 		// Get project object 
 		Project project = (Project) jenkins.getItem(jobName);
 
-  		try {
-  			File file = new File(storePath + filename);
+	  	try {
+	  		File file = new File(storePath + filename);
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));
 			output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
 			output.newLine();
 			output.write("<Builds>");
 			//Recursively add all builds from the job
-			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime().getTime(),endDate.getTime().getTime()).iterator();
+			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime(),endDateObject.getTime()).iterator();;
 		  	while (runIterator.hasNext()) {
 		  		writeBuildToXML(runIterator.next(), 1, output);
-		  	}
+		 	}
 		  	output.newLine();
 		  	output.write("</Builds>");
 		  	output.close();
-  		} catch (IOException e) {
-           e.printStackTrace();
-        }
+	  	} catch (IOException e) {
+	          e.printStackTrace();
+		}
 	}
 
 	public static void writeBuildToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
