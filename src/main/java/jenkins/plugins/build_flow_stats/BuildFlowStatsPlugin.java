@@ -47,14 +47,6 @@ public class BuildFlowStatsPlugin extends Plugin {
         }
     }
 
-	public void doGetToDataCollectionOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
-    	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataCollectionOptions.jelly").forward(req, res);
-    }
-
-	public void doGetToDataPresentationOptions(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
-    	req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/dataPresentationOptions.jelly").forward(req, res);
-    }
-
 	public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		InputOptions presentDataOptions = new InputOptions(req);
 		req.setAttribute("presentDataOptions", presentDataOptions);
@@ -66,12 +58,8 @@ public class BuildFlowStatsPlugin extends Plugin {
 
     public BuildTree[] getPresentationData(String jobName) {
         String rootDir = Jenkins.getInstance().getRootDir().toString();
-        
-        //TODO: This should be made in a more general way based on user options.
         String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
-
         return XMLJobFactory.getPresentationDataFromFile(filePath);
-        
     }
 
     public String[] getStoredJobs() {

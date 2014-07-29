@@ -13,10 +13,8 @@
 			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/>${% Build Flow Stats}</h1>
 			<hr/>
 			<h2>${%Data Presentation}</h2>
-			<label>Presenting data for the ${presentDataOptions.range} last ${presentDataOptions.rangeUnits}</label>
-			<br/>
-			<label>Presenting data for: ${presentDataOptions.jobName}</label>
-			<br/>
+			<label>Presenting data for ${presentDataOptions.jobName} from the last ${presentDataOptions.range} ${presentDataOptions.rangeUnits}</label>
+			<br/><br/>
 			<hr/>
 			<h2>Build Tree</h2>
 			<j:forEach var="buildElement" items="${buildsTree.elements}">
