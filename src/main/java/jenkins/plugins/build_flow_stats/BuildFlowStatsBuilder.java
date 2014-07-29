@@ -31,8 +31,8 @@ public class BuildFlowStatsBuilder extends Builder {
         this.startDate = startDate;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            this.startDateObject = new GregorianCalendar();
             try {
-                this.startDateObject = new GregorianCalendar();
                 this.startDateObject.setTime(sdf.parse(startDate));
             } catch (ParseException e) {
                 throw new RuntimeException("Could not parse start date");
@@ -53,7 +53,7 @@ public class BuildFlowStatsBuilder extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         PrintStream stream = listener.getLogger();
-        StoreData.storeBuildInfoToXML(stream, job, startDateObject, startDate);
+        StoreData.storeBuildInfoToXML(stream, job, startDateObject);
         return true;
     }
 

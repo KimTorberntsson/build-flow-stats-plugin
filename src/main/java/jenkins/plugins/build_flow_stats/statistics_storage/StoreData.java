@@ -16,12 +16,21 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Calendar startDateObject, String startDate) {
-		stream.println("Collect and store data to XML-file for " + jobName);
+	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Calendar startDateObject) {
+		
+		stream.println("Collecting and storing data to XML-file for " + jobName);
 			
 		Calendar endDateObject = new GregorianCalendar();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String startDate = sdf.format(startDateObject.getTime());
 		String endDate = sdf.format(endDateObject.getTime());
+		Calendar tempEndDateObject = new GregorianCalendar();
+		try {
+            tempEndDateObject.setTime(sdf.parse(startDate));
+        } catch (ParseException e) {
+    		//TODO: Maybe fix this?
+        }
+		tempEndDateObject.add(Calendar.DAY_OF_MONTH, 1);
 
 		stream.println("Collecting data from " + startDate + " to " + endDate);
 
@@ -31,28 +40,34 @@ public class StoreData {
 		String storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/";
 		new File(storePath).mkdirs();
 
-		//TODO: This should be made in a more general way with different names for different dates being generated automatically
-		String filename = endDate + ".xml";
-
-		// Get project object 
 		Project project = (Project) jenkins.getItem(jobName);
-
-	  	try {
-	  		File file = new File(storePath + filename);
-			BufferedWriter output = new BufferedWriter(new FileWriter(file));
-			output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
-			output.newLine();
-			output.write("<Builds>");
-			//Recursively add all builds from the job
-			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime().getTime(),endDateObject.getTime().getTime()).iterator();;
-		  	while (runIterator.hasNext()) {
-		  		writeBuildToXML(runIterator.next(), 1, output);
-		 	}
-		  	output.newLine();
-		  	output.write("</Builds>");
-		  	output.close();
-	  	} catch (IOException e) {
-	          e.printStackTrace();
+		
+		while (startDateObject.compareTo(endDateObject) < 0) {
+		  	try {
+				Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime().getTime(),tempEndDateObject.getTime().getTime()).iterator();;
+			  	if (runIterator.hasNext()) {
+			  		String filename = startDate + ".xml";
+			  		File file = new File(storePath + filename);
+					BufferedWriter output = new BufferedWriter(new FileWriter(file));
+					output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+					output.newLine();
+					output.write("<Builds>");
+					while (runIterator.hasNext()) {
+			  			writeBuildToXML(runIterator.next(), 1, output);
+			 		}
+			 		output.newLine();
+				  	output.write("</Builds>");
+				  	output.close();
+				  	stream.println("Wrote data to " + filename);
+				} else {
+					stream.println("No data for " + startDate);
+				}
+			  	startDateObject.add(Calendar.DAY_OF_MONTH, 1);
+			  	tempEndDateObject.add(Calendar.DAY_OF_MONTH, 1);
+			  	startDate = sdf.format(startDateObject.getTime());
+		  	} catch (IOException e) {
+		          e.printStackTrace();
+			}
 		}
 	}
 
