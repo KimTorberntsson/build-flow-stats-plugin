@@ -1,26 +1,13 @@
 package jenkins.plugins.build_flow_stats;
 
 import java.util.*;
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 import jenkins.*;
 import jenkins.model.*;
 import hudson.*;
 import hudson.model.*;
-
-import java.io.File;
-import java.io.PrintStream;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 
 import com.cloudbees.plugins.flow.FlowRun;
 import com.cloudbees.plugins.flow.JobInvocation;
@@ -55,131 +42,122 @@ public class StoreData {
 		// Get project object 
 		Project project = (Project) jenkins.getItem(jobName);
 
-		try {
- 			DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-
-  			//Create root element
-			Document doc = docBuilder.newDocument();
-			Element builds = doc.createElement("Builds");
-			doc.appendChild(builds);
-
+  		try {
+  			File file = new File(storePath + filename);
+			BufferedWriter output = new BufferedWriter(new FileWriter(file));
+			output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+			output.newLine();
+			output.write("<Builds>");
 			//Recursively add all builds from the job
 			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime().getTime(),endDate.getTime().getTime()).iterator();
 		  	while (runIterator.hasNext()) {
-		  		writeBuildToXML(doc, builds, runIterator.next());
+		  		writeBuildToXML(runIterator.next(), 1, output);
 		  	}
-
-			// write the content into xml file
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-			DOMSource source = new DOMSource(doc);
-			StreamResult result = new StreamResult(new File(storePath + filename));    
-			transformer.transform(source, result);
-			   
-			stream.println("File saved!");
-
-		} catch (ParserConfigurationException pce) {
-  			pce.printStackTrace(stream);
-  		} catch (TransformerException tfe) {
-  			tfe.printStackTrace(stream);
-  		}
+		  	output.newLine();
+		  	output.write("</Builds>");
+		  	output.close();
+  		} catch (IOException e) {
+           e.printStackTrace();
+        }
 	}
 
-	public static void writeBuildToXML(Document doc, Element parentElement, Build build) {
+	public static void writeBuildToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+		output.newLine();
 		if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
 			FlowRun flowBuild = (FlowRun) build;
-			Element flowBuildElement = doc.createElement("FlowBuild");
-	    	parentElement.appendChild(flowBuildElement);
-			writeFlowBuildInfoToXML(doc, flowBuildElement, flowBuild);
+			output.write(createTabLevelString(tabLevel) + "<FlowBuild>");
+			writeFlowBuildInfoToXML(flowBuild, tabLevel + 1, output);
+			output.newLine();
+			output.write(createTabLevelString(tabLevel) + "</FlowBuild>");
 		} else {
-	    	Element buildElement = doc.createElement("Build");
-	    	parentElement.appendChild(buildElement);
-	    	writeBuildInfoToXML(doc, buildElement, build);
+	    	output.write(createTabLevelString(tabLevel) + "<Build>");
+	    	writeBuildInfoToXML(build, tabLevel + 1, output);
+	    	output.newLine();
+	    	output.write(createTabLevelString(tabLevel) + "</Build>");
 		}
 	}
 
-	public static void writeFlowBuildInfoToXML(Document doc, Element flowBuildElement, FlowRun flowBuild) {
-		addJobNameToXML(doc, flowBuildElement, flowBuild);
-		addBuildNumberToXML(doc, flowBuildElement, flowBuild);
-		addDateToXML(doc, flowBuildElement, flowBuild);
-		addResultToXML(doc, flowBuildElement, flowBuild);
+	public static void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
+		addJobNameToXML(flowBuild, tabLevel, output);
+		addBuildNumberToXML(flowBuild, tabLevel, output);
+		addDateToXML(flowBuild, tabLevel, output);
+		addResultToXML(flowBuild, tabLevel, output);
 
 		Iterator<JobInvocation> subBuilds = flowBuild.getJobsGraph().vertexSet().iterator();
 		while (subBuilds.hasNext()) {
 			try {
 				Build subBuild = (Build) subBuilds.next().getBuild();
 				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
-					writeBuildToXML(doc, flowBuildElement, subBuild);
+					writeBuildToXML(subBuild, tabLevel + 1, output);
 				}
 			} catch (ExecutionException ee) {} //Fix the exception handling
 			catch (InterruptedException ie) {} //Fix the exception handling
 		}
 	}
 
-	public static void writeBuildInfoToXML(Document doc, Element buildElement, Build build) {
-	  addJobNameToXML(doc, buildElement, build);
-	  addBuildNumberToXML(doc, buildElement, build);
-	  addDateToXML(doc, buildElement, build);
-	  addResultToXML(doc, buildElement, build);
-	  addFailureCauseToXML(doc, buildElement, build, build.getResult().toString());
-	}
-
-	public static void addJobNameToXML(Document doc, Element parentElement, Build build) {
-	  String jobName = build.getParent().getFullName();
-	  Element jobNameElement = doc.createElement("JobName");
-	  jobNameElement.appendChild(doc.createTextNode(jobName));
-	  parentElement.appendChild(jobNameElement);
-	}
-
-	public static void addBuildNumberToXML(Document doc, Element parentElement, Build build) {
-	  String buildNumber = "" + build.getNumber();
-	  Element buildNumberElement = doc.createElement("BuildNumber");
-	  buildNumberElement.appendChild(doc.createTextNode(buildNumber));
-	  parentElement.appendChild(buildNumberElement);
-	}
-
-	public static void addDateToXML(Document doc, Element parentElement, Build build) {
-	  String date = build.getTime().toString();
-	  Element dateElement = doc.createElement("Date");
-	  dateElement.appendChild(doc.createTextNode(date));
-	  parentElement.appendChild(dateElement);
-	}
-
-	public static void addResultToXML(Document doc, Element parentElement, Build build) {
-	  String result = build.getResult().toString();
-	  Element resultElement = doc.createElement("Result");
-	  resultElement.appendChild(doc.createTextNode(result));
-	  parentElement.appendChild(resultElement);
-	}
-
-	public static void addFailureCauseToXML(Document doc, Element parentElement, Build build, String result) {
-	  //The logs should eventually be analysed instead of this mumbojumbo of course
-	  if (!result.equals("SUCCESS")) {
-	    String failureCause;
-	    if (result.equals("UNSTABLE")) {
-	      failureCause = "Unstable Build";
-	    } else if (result.equals("NOT_BUILT")) {
-	      failureCause = "Not Built";
-	    } else if (result.equals("ABORTED")) {
-	      failureCause = "Aborted";
-	    } else {
-	      double random = Math.random();
-	      if (random < 0.25) {
-	        failureCause = "Temporary fail explanation 1"; 
-	      } else if (0.25 <= random && random < 0.5) {
-	        failureCause = "Temporary fail explanation 2"; 
-	      } else if (0.5 <= random && random < 0.75) {
-	        failureCause = "Temporary fail explanation 3"; 
-	      } else {
-	        failureCause = "Temporary fail explanation 4"; 
-	      }
-	    }
-	    Element failureCauseElement = doc.createElement("FailureCause");
-	    failureCauseElement.appendChild(doc.createTextNode(failureCause));
-	    parentElement.appendChild(failureCauseElement);
+	public static void writeBuildInfoToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	  addJobNameToXML(build, tabLevel, output);
+	  addBuildNumberToXML(build, tabLevel, output);
+	  addDateToXML(build, tabLevel, output);
+	  addResultToXML(build, tabLevel, output);
+	  if (!build.getResult().toString().equals("SUCCESS")) {
+	  	addFailureCauseToXML(build.getResult().toString(), tabLevel, output);
 	  }
 	}
+
+	public static void addJobNameToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	  output.newLine();
+	  output.write(createTabLevelString(tabLevel) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
+	}
+
+	public static void addBuildNumberToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	  output.newLine();
+	  output.write(createTabLevelString(tabLevel) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
+	}
+
+	public static void addDateToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	  output.newLine();
+	  output.write(createTabLevelString(tabLevel) + "<Date>" + build.getTime() + "</Date>");
+	}
+
+	public static void addResultToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	  output.newLine();
+	  output.write(createTabLevelString(tabLevel) + "<Result>" + build.getResult() + "</Result>");
+	}
+
+	//TODO: Make this much neater. Of course it will have to be rewritten anyway because of the machiune learning part.
+	public static void addFailureCauseToXML(String result, int tabLevel, BufferedWriter output) throws IOException {
+	  	//The logs should eventually be analysed instead of this mumbojumbo of course
+		output.newLine();
+		String failureCause = "";
+	    if (result.equals("UNSTABLE")) {
+	    	failureCause = "Unstable Build";
+	    } else if (result.equals("NOT_BUILT")) {
+	   		failureCause = "Not Built";
+	    } else if (result.equals("ABORTED")) {
+	    	failureCause = "Aborted";
+	    } else {
+	    	double random = Math.random();
+	    	if (random < 0.25) {
+	    		failureCause = "Temporary fail explanation 1"; 
+	    	} else if (0.25 <= random && random < 0.5) {
+	    		failureCause = "Temporary fail explanation 2"; 
+	      	} else if (0.5 <= random && random < 0.75) {
+	        	failureCause = "Temporary fail explanation 3"; 
+	      	} else {
+	        	failureCause = "Temporary fail explanation 4"; 
+	    	}
+	    }
+		output.write(createTabLevelString(tabLevel) + "<FailureCause>" + failureCause + "</FailureCause>");
+	}
+
+	public static String createTabLevelString(int i) {
+		String tabString = "";
+		while (i > 0) {
+			tabString += "\t";
+			i -= 1;
+		}
+		return tabString;
+	}
+
 }
