@@ -23,7 +23,7 @@ public class BuildFlowStatsBuilder extends Builder {
 
     private final String job;
     private final String startDate;
-    private final Date startDateObject;
+    private final Calendar startDateObject;
 
     @DataBoundConstructor
     public BuildFlowStatsBuilder(String job, String startDate) {
@@ -32,7 +32,8 @@ public class BuildFlowStatsBuilder extends Builder {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
             try {
-                this.startDateObject = sdf.parse(startDate);
+                this.startDateObject = new GregorianCalendar();
+                this.startDateObject.setTime(sdf.parse(startDate));
             } catch (ParseException e) {
                 throw new RuntimeException("Could not parse start date");
             }

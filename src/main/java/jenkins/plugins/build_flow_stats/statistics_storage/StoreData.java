@@ -16,12 +16,12 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Date startDateObject, String startDate) {
+	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Calendar startDateObject, String startDate) {
 		stream.println("Collect and store data to XML-file for " + jobName);
 			
-		Date endDateObject = new Date();
+		Calendar endDateObject = new GregorianCalendar();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-		String endDate = sdf.format(endDateObject);
+		String endDate = sdf.format(endDateObject.getTime());
 
 		stream.println("Collecting data from " + startDate + " to " + endDate);
 
@@ -44,7 +44,7 @@ public class StoreData {
 			output.newLine();
 			output.write("<Builds>");
 			//Recursively add all builds from the job
-			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime(),endDateObject.getTime()).iterator();;
+			Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime().getTime(),endDateObject.getTime().getTime()).iterator();;
 		  	while (runIterator.hasNext()) {
 		  		writeBuildToXML(runIterator.next(), 1, output);
 		 	}
