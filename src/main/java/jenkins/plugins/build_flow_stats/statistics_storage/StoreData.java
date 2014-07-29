@@ -20,9 +20,9 @@ public class StoreData {
 		stream.println("Collect and store data to XML-file for " + jobName);
 
 		String[] date = startDateString.split("-");
-        Calendar startDate = new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]), Integer.parseInt(date[3]), Integer.parseInt(date[4]));
+        Calendar startDate = new GregorianCalendar(Integer.parseInt(date[0]), Integer.parseInt(date[1]), Integer.parseInt(date[2]));
 		Calendar endDate = new GregorianCalendar();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 		String endDateString = sdf.format(endDate.getTime());
 
 		stream.println("Collecting data from " + startDateString + " to " + endDateString);
@@ -106,23 +106,24 @@ public class StoreData {
 	}
 
 	public static void addJobNameToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-	  output.newLine();
-	  output.write(createTabLevelString(tabLevel) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
+		output.newLine();
+		output.write(createTabLevelString(tabLevel) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
 	}
 
 	public static void addBuildNumberToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-	  output.newLine();
-	  output.write(createTabLevelString(tabLevel) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
+		output.newLine();
+		output.write(createTabLevelString(tabLevel) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
 	}
 
 	public static void addDateToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-	  output.newLine();
-	  output.write(createTabLevelString(tabLevel) + "<Date>" + build.getTime() + "</Date>");
+		output.newLine();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+		output.write(createTabLevelString(tabLevel) + "<Date>" + sdf.format(build.getTime()) + "</Date>");
 	}
 
 	public static void addResultToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-	  output.newLine();
-	  output.write(createTabLevelString(tabLevel) + "<Result>" + build.getResult() + "</Result>");
+		output.newLine();
+		output.write(createTabLevelString(tabLevel) + "<Result>" + build.getResult() + "</Result>");
 	}
 
 	//TODO: Make this much neater. Of course it will have to be rewritten anyway because of the machiune learning part.

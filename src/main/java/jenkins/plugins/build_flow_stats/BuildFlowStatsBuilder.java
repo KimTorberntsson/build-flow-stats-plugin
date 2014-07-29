@@ -70,7 +70,7 @@ public class BuildFlowStatsBuilder extends Builder {
         }
 
         public FormValidation doCheckStartDate(@QueryParameter String value) throws IOException, ServletException {
-            if (value.matches("\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}")) {
+            if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 return FormValidation.ok();
             } else {
                 return FormValidation.error("Wrong date format");
