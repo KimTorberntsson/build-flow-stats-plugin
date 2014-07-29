@@ -16,21 +16,23 @@ import java.util.concurrent.ExecutionException;
 
 public class StoreData {
 
-	public static void storeBuildInfoToXML(PrintStream stream, String jobName, Calendar startDateObject) {
+	private PrintStream stream;
+	private String jobName;
+	private CalendarWrapper startDate;
+
+	public StoreData(PrintStream stream, String jobName, CalendarWrapper startDate) {
+		this.stream = stream;
+		this.jobName = jobName;
+		this.startDate = startDate;
+	}
+
+	public void storeBuildInfoToXML() {
 		
 		stream.println("Collecting and storing data to XML-file for " + jobName);
 			
-		Calendar endDateObject = new GregorianCalendar();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		String startDate = sdf.format(startDateObject.getTime());
-		String endDate = sdf.format(endDateObject.getTime());
-		Calendar tempEndDateObject = new GregorianCalendar();
-		try {
-            tempEndDateObject.setTime(sdf.parse(startDate));
-        } catch (ParseException e) {
-    		//TODO: Maybe fix this?
-        }
-		tempEndDateObject.add(Calendar.DAY_OF_MONTH, 1);
+		CalendarWrapper endDate = new CalendarWrapper();
+		CalendarWrapper tempEndDate = new CalendarWrapper();
+		tempEndDate.add();
 
 		stream.println("Collecting data from " + startDate + " to " + endDate);
 
@@ -42,9 +44,9 @@ public class StoreData {
 
 		Project project = (Project) jenkins.getItem(jobName);
 		
-		while (startDateObject.compareTo(endDateObject) < 0) {
+		while (startDate.compareTo(endDate) < 0) {
 		  	try {
-				Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDateObject.getTime().getTime(),tempEndDateObject.getTime().getTime()).iterator();;
+				Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime(), tempEndDate.getTime()).iterator();;
 			  	if (runIterator.hasNext()) {
 			  		String filename = startDate + ".xml";
 			  		File file = new File(storePath + filename);
@@ -62,16 +64,15 @@ public class StoreData {
 				} else {
 					stream.println("No data for " + startDate);
 				}
-			  	startDateObject.add(Calendar.DAY_OF_MONTH, 1);
-			  	tempEndDateObject.add(Calendar.DAY_OF_MONTH, 1);
-			  	startDate = sdf.format(startDateObject.getTime());
+			  	startDate.add();
+			  	tempEndDate.add();
 		  	} catch (IOException e) {
 		          e.printStackTrace();
 			}
 		}
 	}
 
-	public static void writeBuildToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+	public void writeBuildToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
 		output.newLine();
 		if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
 			FlowRun flowBuild = (FlowRun) build;
@@ -87,7 +88,7 @@ public class StoreData {
 		}
 	}
 
-	public static void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
+	public void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
 		addJobNameToXML(flowBuild, tabLevel, output);
 		addBuildNumberToXML(flowBuild, tabLevel, output);
 		addDateToXML(flowBuild, tabLevel, output);

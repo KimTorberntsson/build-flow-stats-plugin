@@ -23,7 +23,7 @@ public class BuildFlowStatsBuilder extends Builder {
 
     private final String job;
     private final String startDate;
-    private final Calendar startDateObject;
+    private final CalendarWrapper startDateObject;
 
     @DataBoundConstructor
     public BuildFlowStatsBuilder(String job, String startDate) {
@@ -31,12 +31,7 @@ public class BuildFlowStatsBuilder extends Builder {
         this.startDate = startDate;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            this.startDateObject = new GregorianCalendar();
-            try {
-                this.startDateObject.setTime(sdf.parse(startDate));
-            } catch (ParseException e) {
-                throw new RuntimeException("Could not parse start date");
-            }
+            this.startDateObject = new CalendarWrapper(startDate);
         } else {
             throw new RuntimeException("Wrong format for start date");
         }
@@ -53,7 +48,8 @@ public class BuildFlowStatsBuilder extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         PrintStream stream = listener.getLogger();
-        StoreData.storeBuildInfoToXML(stream, job, startDateObject);
+        StoreData data = new StoreData(stream, job, startDateObject);
+        data.storeBuildInfoToXML();
         return true;
     }
 
