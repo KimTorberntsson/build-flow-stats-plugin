@@ -8,6 +8,7 @@ import jenkins.*;
 import jenkins.model.*;
 import hudson.*;
 import hudson.model.*;
+import hudson.util.RunList;
 import com.cloudbees.plugins.flow.FlowRun;
 import com.cloudbees.plugins.flow.JobInvocation;
 import java.util.concurrent.ExecutionException;
@@ -53,16 +54,17 @@ public class StoreData {
 	}
 
 	private void storeToXMLFile(CalendarWrapper startDate, CalendarWrapper endDate) {
-		Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime(), endDate.getTime()).iterator();
-		if (runIterator.hasNext()) {
+		RunList<Build> runList = project.getBuilds().byTimestamp(startDate.getTime(), endDate.getTime());
+		ListIterator<Build> runIterator = runList.listIterator(runList.size());
+		if (runIterator.hasPrevious()) {
 			String filename = startDate + ".xml";
 	  		File file = new File(storePath + filename);
 	  		try {
 				BufferedWriter output = new BufferedWriter(new FileWriter(file));
 				output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
 				output.write("\n<Builds>");
-				while (runIterator.hasNext()) {
-		  			Build build = runIterator.next();
+				while (runIterator.hasPrevious()) {
+		  			Build build = runIterator.previous();
 		  			if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
 		  				FlowRun flowBuild = (FlowRun) build;
 		  				writeFlowBuildInfoToXML(flowBuild, 1, output);
