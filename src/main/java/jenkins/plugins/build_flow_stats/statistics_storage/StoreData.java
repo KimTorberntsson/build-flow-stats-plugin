@@ -4,12 +4,10 @@ import java.util.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
-
 import jenkins.*;
 import jenkins.model.*;
 import hudson.*;
 import hudson.model.*;
-
 import com.cloudbees.plugins.flow.FlowRun;
 import com.cloudbees.plugins.flow.JobInvocation;
 import java.util.concurrent.ExecutionException;
@@ -19,122 +17,101 @@ public class StoreData {
 	private PrintStream stream;
 	private String jobName;
 	private CalendarWrapper startDate;
+	private CalendarWrapper endDate;
+	private Jenkins jenkins;
+	private String storePath;
+	private Project project;
 
 	public StoreData(PrintStream stream, String jobName, CalendarWrapper startDate) {
 		this.stream = stream;
 		this.jobName = jobName;
 		this.startDate = startDate;
+		endDate = new CalendarWrapper();
+		jenkins = Jenkins.getInstance();
+		project = (Project) jenkins.getItem(jobName);
+		storePath = getStorePath();
+	}
+
+	private String getStorePath() {
+		String rootDir = jenkins.getRootDir().toString();
+		return storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
 	}
 
 	public void storeBuildInfoToXML() {
 		
 		stream.println("Collecting and storing data to XML-file for " + jobName);
-			
-		CalendarWrapper endDate = new CalendarWrapper();
+		stream.println("Collecting data from " + startDate + " to " + endDate);
+		new File(storePath).mkdirs();
+		
 		CalendarWrapper tempEndDate = new CalendarWrapper();
 		tempEndDate.add();
-
-		stream.println("Collecting data from " + startDate + " to " + endDate);
-
-		//Create path for storing data
-		Jenkins jenkins = Jenkins.getInstance();
-		String rootDir = jenkins.getRootDir().toString();
-		String storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/";
-		new File(storePath).mkdirs();
-
-		Project project = (Project) jenkins.getItem(jobName);
-		
 		while (startDate.compareTo(endDate) < 0) {
-		  	try {
-				Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime(), tempEndDate.getTime()).iterator();;
-			  	if (runIterator.hasNext()) {
-			  		String filename = startDate + ".xml";
-			  		File file = new File(storePath + filename);
-					BufferedWriter output = new BufferedWriter(new FileWriter(file));
-					output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
-					output.newLine();
-					output.write("<Builds>");
-					while (runIterator.hasNext()) {
-			  			writeBuildToXML(runIterator.next(), 1, output);
-			 		}
-			 		output.newLine();
-				  	output.write("</Builds>");
-				  	output.close();
-				  	stream.println("Wrote data to " + filename);
-				} else {
-					stream.println("No data for " + startDate);
-				}
-			  	startDate.add();
-			  	tempEndDate.add();
-		  	} catch (IOException e) {
-		          e.printStackTrace();
+			storeToXMLFile(startDate, tempEndDate);
+			startDate.add();
+			tempEndDate.add();
+		}
+	}
+
+	private void storeToXMLFile(CalendarWrapper startDate, CalendarWrapper endDate) {
+		Iterator<Build> runIterator = project.getBuilds().byTimestamp(startDate.getTime(), endDate.getTime()).iterator();
+		if (runIterator.hasNext()) {
+			String filename = startDate + ".xml";
+	  		File file = new File(storePath + filename);
+	  		try {
+				BufferedWriter output = new BufferedWriter(new FileWriter(file));
+				output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+				output.write("\n<Builds>");
+				while (runIterator.hasNext()) {
+		  			Build build = runIterator.next();
+		  			if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
+		  				FlowRun flowBuild = (FlowRun) build;
+		  				writeFlowBuildInfoToXML(flowBuild, 1, output);
+		  			} else {
+		  				writeBuildInfoToXML(build, 1, output);
+		  			}
+		 		}
+			  	output.write("\n</Builds>");
+			  	output.close();
+			  	stream.println("Wrote data to " + filename);
+			} catch (IOException e) {
+				e.printStackTrace(); //TODO: Fix this exception
 			}
-		}
-	}
-
-	public void writeBuildToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.newLine();
-		if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
-			FlowRun flowBuild = (FlowRun) build;
-			output.write(createTabLevelString(tabLevel) + "<FlowBuild>");
-			writeFlowBuildInfoToXML(flowBuild, tabLevel + 1, output);
-			output.newLine();
-			output.write(createTabLevelString(tabLevel) + "</FlowBuild>");
 		} else {
-	    	output.write(createTabLevelString(tabLevel) + "<Build>");
-	    	writeBuildInfoToXML(build, tabLevel + 1, output);
-	    	output.newLine();
-	    	output.write(createTabLevelString(tabLevel) + "</Build>");
+			stream.println("No data for " + startDate);
 		}
 	}
 
-	public void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
-		addJobNameToXML(flowBuild, tabLevel, output);
-		addBuildNumberToXML(flowBuild, tabLevel, output);
-		addDateToXML(flowBuild, tabLevel, output);
-		addResultToXML(flowBuild, tabLevel, output);
-
+	private void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
+		output.write("\n" + createTabLevelString(tabLevel) + "<FlowBuild>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + flowBuild.getParent().getFullName() + "</JobName>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + flowBuild.getNumber() + "</BuildNumber>");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(flowBuild.getTime()) + "</Date>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Result>" + flowBuild.getResult() + "</Result>");
 		Iterator<JobInvocation> subBuilds = flowBuild.getJobsGraph().vertexSet().iterator();
 		while (subBuilds.hasNext()) {
 			try {
 				Build subBuild = (Build) subBuilds.next().getBuild();
 				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
-					writeBuildToXML(subBuild, tabLevel + 1, output);
+					writeBuildInfoToXML(subBuild, tabLevel + 1, output);
 				}
 			} catch (ExecutionException ee) {} //Fix the exception handling
 			catch (InterruptedException ie) {} //Fix the exception handling
 		}
+		output.write("\n" + createTabLevelString(tabLevel) + "</FlowBuild>");
 	}
 
-	public static void writeBuildInfoToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-	  addJobNameToXML(build, tabLevel, output);
-	  addBuildNumberToXML(build, tabLevel, output);
-	  addDateToXML(build, tabLevel, output);
-	  addResultToXML(build, tabLevel, output);
-	  if (!build.getResult().toString().equals("SUCCESS")) {
-	  	addFailureCauseToXML(build.getResult().toString(), tabLevel, output);
-	  }
-	}
-
-	public static void addJobNameToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.newLine();
-		output.write(createTabLevelString(tabLevel) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
-	}
-
-	public static void addBuildNumberToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.newLine();
-		output.write(createTabLevelString(tabLevel) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
-	}
-
-	public static void addDateToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.newLine();
+	private static void writeBuildInfoToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
+		output.write("\n" + createTabLevelString(tabLevel) + "<Build>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-		output.write(createTabLevelString(tabLevel) + "<Date>" + sdf.format(build.getTime()) + "</Date>");
-	}
-
-	public static void addResultToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.newLine();
-		output.write(createTabLevelString(tabLevel) + "<Result>" + build.getResult() + "</Result>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(build.getTime()) + "</Date>");
+		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Result>" + build.getResult() + "</Result>");
+		if (!build.getResult().toString().equals("SUCCESS")) {
+			addFailureCauseToXML(build.getResult().toString(), tabLevel, output);
+		}
+		output.write("\n" + createTabLevelString(tabLevel) + "</Build>");
 	}
 
 	//TODO: Make this much neater. Of course it will have to be rewritten anyway because of the machiune learning part.
