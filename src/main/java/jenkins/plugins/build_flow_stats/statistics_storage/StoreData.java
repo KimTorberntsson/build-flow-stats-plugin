@@ -39,12 +39,10 @@ public class StoreData {
 	}
 
 	public void storeBuildInfoToXML() {
-		
 		stream.println("Collecting and storing data to XML-file for " + jobName);
 		stream.println("Collecting data from " + startDate + " to " + endDate);
 		new File(storePath).mkdirs();
-		
-		CalendarWrapper tempEndDate = new CalendarWrapper();
+		CalendarWrapper tempEndDate = new CalendarWrapper(startDate.toString());
 		tempEndDate.add();
 		while (startDate.compareTo(endDate) < 0) {
 			storeToXMLFile(startDate, tempEndDate);
@@ -54,7 +52,7 @@ public class StoreData {
 	}
 
 	private void storeToXMLFile(CalendarWrapper startDate, CalendarWrapper endDate) {
-		RunList<Build> runList = project.getBuilds().byTimestamp(startDate.getTime(), endDate.getTime());
+		RunList<Build> runList = project.getBuilds().byTimestamp(startDate.getTime().getTime(), endDate.getTime().getTime());
 		ListIterator<Build> runIterator = runList.listIterator(runList.size());
 		if (runIterator.hasPrevious()) {
 			String filename = startDate + ".xml";

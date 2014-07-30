@@ -10,7 +10,7 @@ import java.io.File;
 
 public class XMLJobFactory {
 	
-	public static BuildTree[] getPresentationDataFromFile(String filePath) {
+	public static BuildTree[] getPresentationDataFromFile(String filePath, CalendarWrapper startDate) {
 		
 		JobList allJobs = new JobList();
 		FailureCauseList allFailureCauses = new FailureCauseList();
@@ -19,20 +19,22 @@ public class XMLJobFactory {
 		String[] xmlFiles = jobFolder.list();
 
 		for (int i = 0; i < xmlFiles.length; i++) {
-			try {
-				File xmlFile = new File(filePath + "/" + xmlFiles[i]);
-				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-				Document doc = dBuilder.parse(xmlFile);
+			CalendarWrapper fileDate = new CalendarWrapper(xmlFiles[i].replace(".xml", ""));
+			if (startDate.toString().compareTo(fileDate.toString()) <= 0) {
+				try {
+					File xmlFile = new File(filePath + "/" + xmlFiles[i]);
+					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+					Document doc = dBuilder.parse(xmlFile);
 
-				doc.getDocumentElement().normalize();
+					doc.getDocumentElement().normalize();
 
-				Element rootElement = doc.getDocumentElement();
+					Element rootElement = doc.getDocumentElement();
 
-				addBuildsFromNode(rootElement, allJobs, allFailureCauses);
-
-			} catch (Exception e) {
-				e.printStackTrace();
+					addBuildsFromNode(rootElement, allJobs, allFailureCauses);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

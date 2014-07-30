@@ -4,37 +4,34 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
-public class CalendarWrapper {
-	private Calendar calendar;
+public class CalendarWrapper extends GregorianCalendar{
+
 	private SimpleDateFormat sdf;
 
 	public CalendarWrapper() {
+		super();
 		sdf = new SimpleDateFormat("yyyy-MM-dd");
-		this.calendar = new GregorianCalendar();
 	}
 
 	public CalendarWrapper(String date) {
 		this();
 		try {
-            this.calendar.setTime(sdf.parse(date));
+            this.setTime(sdf.parse(date));
 		} catch (ParseException e) {
 			throw new RuntimeException("Could not parse start date");
 		}
 	}
 
 	public void add() {
-		calendar.add(Calendar.DAY_OF_MONTH, 1);
+		super.add(Calendar.DAY_OF_MONTH, 1);
+	}
+
+	public void add(int field, int amount) {
+		super.add(field, amount);
 	}
 
 	public String toString() {
-		return sdf.format(calendar.getTime());
+		return sdf.format(super.getTime().getTime());
 	}
 
-	public long getTime() {
-		return calendar.getTime().getTime();
-	}
-
-	public int compareTo(CalendarWrapper otherCalendar) {
-		return calendar.compareTo(otherCalendar.calendar);
-	}
 }

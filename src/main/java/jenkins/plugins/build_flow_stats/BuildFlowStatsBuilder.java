@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 /**
  * This Builder stores information about flowbuilds into XML-files that can later be accessed
  * by the Plugin for presenting statistics.
+ * @author Kim Torberntsson
  */
 public class BuildFlowStatsBuilder extends Builder {
 
