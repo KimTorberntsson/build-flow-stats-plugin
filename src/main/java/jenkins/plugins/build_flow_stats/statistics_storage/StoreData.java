@@ -97,8 +97,11 @@ public class StoreData {
 				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
 					flowBuildInfo += getBuildInfoForXML(subBuild, tabLevel + 1);
 				}
-			} catch (ExecutionException ee) {} //Fix the exception handling
-			catch (InterruptedException ie) {} //Fix the exception handling
+			} catch (ExecutionException ee) {
+				//TODO: Fix the exception handling
+			} catch (InterruptedException ie) {
+				//TODO: Fix the exception handling
+			} 
 		}
 		flowBuildInfo += "\n" + createTabLevelString(tabLevel) + "</FlowBuild>";
 		return flowBuildInfo;
