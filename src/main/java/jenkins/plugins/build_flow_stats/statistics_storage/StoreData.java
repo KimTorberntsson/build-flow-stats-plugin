@@ -67,9 +67,9 @@ public class StoreData {
 		  			Build build = runIterator.previous();
 		  			if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
 		  				FlowRun flowBuild = (FlowRun) build;
-		  				writeFlowBuildInfoToXML(flowBuild, 1, output);
+		  				output.write(getFlowBuildInfoForXML(flowBuild, 1));
 		  			} else {
-		  				writeBuildInfoToXML(build, 1, output);
+		  				output.write(getBuildInfoForXML(build, 1));
 		  			}
 		 		}
 			  	output.write("\n</Builds>");
@@ -83,43 +83,44 @@ public class StoreData {
 		}
 	}
 
-	private void writeFlowBuildInfoToXML(FlowRun flowBuild, int tabLevel, BufferedWriter output) throws IOException {
-		output.write("\n" + createTabLevelString(tabLevel) + "<FlowBuild>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + flowBuild.getParent().getFullName() + "</JobName>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + flowBuild.getNumber() + "</BuildNumber>");
+	private String getFlowBuildInfoForXML(FlowRun flowBuild, int tabLevel) {
+		String flowBuildInfo = "\n" + createTabLevelString(tabLevel) + "<FlowBuild>";
+		flowBuildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + flowBuild.getParent().getFullName() + "</JobName>";
+		flowBuildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + flowBuild.getNumber() + "</BuildNumber>";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(flowBuild.getTime()) + "</Date>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Result>" + flowBuild.getResult() + "</Result>");
+		flowBuildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(flowBuild.getTime()) + "</Date>";
+		flowBuildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<Result>" + flowBuild.getResult() + "</Result>";
 		Iterator<JobInvocation> subBuilds = flowBuild.getJobsGraph().vertexSet().iterator();
 		while (subBuilds.hasNext()) {
 			try {
 				Build subBuild = (Build) subBuilds.next().getBuild();
 				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
-					writeBuildInfoToXML(subBuild, tabLevel + 1, output);
+					flowBuildInfo += getBuildInfoForXML(subBuild, tabLevel + 1);
 				}
 			} catch (ExecutionException ee) {} //Fix the exception handling
 			catch (InterruptedException ie) {} //Fix the exception handling
 		}
-		output.write("\n" + createTabLevelString(tabLevel) + "</FlowBuild>");
+		flowBuildInfo += "\n" + createTabLevelString(tabLevel) + "</FlowBuild>";
+		return flowBuildInfo;
 	}
 
-	private static void writeBuildInfoToXML(Build build, int tabLevel, BufferedWriter output) throws IOException {
-		output.write("\n" + createTabLevelString(tabLevel) + "<Build>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + build.getParent().getFullName() + "</JobName>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>");
+	private String getBuildInfoForXML(Build build, int tabLevel) {
+		String buildInfo = "\n" + createTabLevelString(tabLevel) + "<Build>";
+		buildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<JobName>" + build.getParent().getFullName() + "</JobName>";
+		buildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<BuildNumber>" + build.getNumber() + "</BuildNumber>";
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(build.getTime()) + "</Date>");
-		output.write("\n" + createTabLevelString(tabLevel + 1) + "<Result>" + build.getResult() + "</Result>");
+		buildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<Date>" + sdf.format(build.getTime()) + "</Date>";
+		buildInfo += "\n" + createTabLevelString(tabLevel + 1) + "<Result>" + build.getResult() + "</Result>";
 		if (!build.getResult().toString().equals("SUCCESS")) {
-			addFailureCauseToXML(build.getResult().toString(), tabLevel, output);
+			buildInfo += getFailureCauseForXML(build.getResult().toString(), tabLevel);
 		}
-		output.write("\n" + createTabLevelString(tabLevel) + "</Build>");
+		buildInfo += "\n" + createTabLevelString(tabLevel) + "</Build>";
+		return buildInfo;
 	}
 
 	//TODO: Make this much neater. Of course it will have to be rewritten anyway because of the machiune learning part.
-	public static void addFailureCauseToXML(String result, int tabLevel, BufferedWriter output) throws IOException {
+	public String getFailureCauseForXML(String result, int tabLevel) {
 	  	//The logs should eventually be analysed instead of this mumbojumbo of course
-		output.newLine();
 		String failureCause = "";
 	    if (result.equals("UNSTABLE")) {
 	    	failureCause = "Unstable Build";
@@ -139,10 +140,10 @@ public class StoreData {
 	        	failureCause = "Temporary fail explanation 4"; 
 	    	}
 	    }
-		output.write(createTabLevelString(tabLevel) + "<FailureCause>" + failureCause + "</FailureCause>");
+		return "\n" + createTabLevelString(tabLevel) + "<FailureCause>" + failureCause + "</FailureCause>";
 	}
 
-	public static String createTabLevelString(int i) {
+	private String createTabLevelString(int i) {
 		String tabString = "";
 		while (i > 0) {
 			tabString += "\t";
