@@ -16,7 +16,6 @@ import org.kohsuke.stapler.StaplerRequest;
 
 /**
 * Starting point for the Build Flow Stats Plugin.
-*
 * @author Kim Torberntsson
 * @plugin
 */
