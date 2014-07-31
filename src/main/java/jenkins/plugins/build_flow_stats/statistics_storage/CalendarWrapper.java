@@ -20,7 +20,7 @@ public class CalendarWrapper extends GregorianCalendar{
 	public CalendarWrapper(String date) {
 		this();
 		try {
-            this.setTime(sdf.parse(date));
+			this.setTime(sdf.parse(date));
 		} catch (ParseException e) {
 			throw new RuntimeException("Could not parse start date");
 		}

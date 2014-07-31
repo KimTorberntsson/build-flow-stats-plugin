@@ -8,8 +8,8 @@ import java.util.Comparator;
  */
 public class CompareFailureCausesBasedOnNumberOfBuilds implements Comparator<FailureCause> {
 
-    public int compare(FailureCause f1, FailureCause f2) {
-        return f2.getNumberOfBuilds() - f1.getNumberOfBuilds();
-    }
+	public int compare(FailureCause f1, FailureCause f2) {
+	return f2.getNumberOfBuilds() - f1.getNumberOfBuilds();
+	}
 
 }

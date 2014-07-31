@@ -22,71 +22,71 @@ import javax.servlet.ServletException;
  */
 public class BuildFlowStatsBuilder extends Builder {
 
-    private final String job;
-    private final String startDate;
-    private final CalendarWrapper startDateObject;
+	private final String job;
+	private final String startDate;
+	private final CalendarWrapper startDateObject;
 
-    @DataBoundConstructor
-    public BuildFlowStatsBuilder(String job, String startDate) {
-        this.job = job;
-        this.startDate = startDate;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            this.startDateObject = new CalendarWrapper(startDate);
-        } else {
-            throw new RuntimeException("Wrong format for start date");
-        }
-    }
+	@DataBoundConstructor
+	public BuildFlowStatsBuilder(String job, String startDate) {
+		this.job = job;
+		this.startDate = startDate;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+			this.startDateObject = new CalendarWrapper(startDate);
+		} else {
+			throw new RuntimeException("Wrong format for start date");
+		}
+	}
 
-    public String getJob() {
-        return job;
-    }
+	public String getJob() {
+		return job;
+	}
 
-    public String getStartDate() {
-        return startDate;
-    }
+	public String getStartDate() {
+		return startDate;
+	}
 
-    @Override
-    public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
-        PrintStream stream = listener.getLogger();
-        StoreData data = new StoreData(stream, job);
-        data.storeBuildInfoToXML(startDateObject);
-        return true;
-    }
+	@Override
+	public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
+		PrintStream stream = listener.getLogger();
+		StoreData data = new StoreData(stream, job);
+		data.storeBuildInfoToXML(startDateObject);
+		return true;
+	}
 
-    @Extension 
-    public static final class BuildFlowStatsBuilderDescriptor extends BuildStepDescriptor<Builder> {
+	@Extension 
+	public static final class BuildFlowStatsBuilderDescriptor extends BuildStepDescriptor<Builder> {
 
-        public boolean isApplicable(Class<? extends AbstractProject> aClass) {
-            // Indicates that this builder can be used with all kinds of project types 
-            return true;
-        }
+		public boolean isApplicable(Class<? extends AbstractProject> aClass) {
+			// Indicates that this builder can be used with all kinds of project types 
+			return true;
+		}
 
-        public String getDisplayName() {
-            return "Store Flow Build Statistics";
-        }
+		public String getDisplayName() {
+			return "Store Flow Build Statistics";
+		}
 
-        public ListBoxModel doFillJobItems() {
-            ListBoxModel items = new ListBoxModel();
-            Jenkins jenkins = Jenkins.getInstance();
-            Iterator<String> jobNamesIterator = jenkins.getJobNames().iterator();
-            while (jobNamesIterator.hasNext()) {
-                String jobName = jobNamesIterator.next();
-                Item item = jenkins.getItem(jobName);
-                if (item != null) {
-                    items.add(jobName);
-                }
-            }
-            return items;
-        }
+		public ListBoxModel doFillJobItems() {
+			ListBoxModel items = new ListBoxModel();
+			Jenkins jenkins = Jenkins.getInstance();
+			Iterator<String> jobNamesIterator = jenkins.getJobNames().iterator();
+			while (jobNamesIterator.hasNext()) {
+				String jobName = jobNamesIterator.next();
+				Item item = jenkins.getItem(jobName);
+				if (item != null) {
+					items.add(jobName);
+				}
+			}
+			return items;
+		}
 
-        public FormValidation doCheckStartDate(@QueryParameter String value) throws IOException, ServletException {
-            if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                return FormValidation.ok();
-            } else {
-                return FormValidation.error("Wrong date format");
-            }
-        }
-    }
-    
+		public FormValidation doCheckStartDate(@QueryParameter String value) throws IOException, ServletException {
+			if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
+				return FormValidation.ok();
+			} else {
+				 return FormValidation.error("Wrong date format");
+			}
+		}
+	}
+	
 }
