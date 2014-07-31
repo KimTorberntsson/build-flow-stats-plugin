@@ -49,8 +49,8 @@ public class BuildFlowStatsBuilder extends Builder {
     @Override
     public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
         PrintStream stream = listener.getLogger();
-        StoreData data = new StoreData(stream, job, startDateObject);
-        data.storeBuildInfoToXML();
+        StoreData data = new StoreData(stream, job);
+        data.storeBuildInfoToXML(startDateObject);
         return true;
     }
 

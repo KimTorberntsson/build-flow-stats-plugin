@@ -10,6 +10,10 @@ public class CalendarWrapper extends GregorianCalendar{
 
 	public CalendarWrapper() {
 		super();
+		super.set(Calendar.HOUR_OF_DAY, 0);
+		super.set(Calendar.MINUTE, 0);
+		super.set(Calendar.SECOND, 0);
+		super.set(Calendar.MILLISECOND, 0);
 		sdf = new SimpleDateFormat("yyyy-MM-dd");
 	}
 
