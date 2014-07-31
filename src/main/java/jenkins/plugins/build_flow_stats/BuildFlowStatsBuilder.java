@@ -73,7 +73,7 @@ public class BuildFlowStatsBuilder extends Builder {
             while (jobNamesIterator.hasNext()) {
                 String jobName = jobNamesIterator.next();
                 Item item = jenkins.getItem(jobName);
-                if (item != null && jenkins.getItem(jobName).getClass().toString().equals("class com.cloudbees.plugins.flow.BuildFlow")) {
+                if (item != null) {
                     items.add(jobName);
                 }
             }
