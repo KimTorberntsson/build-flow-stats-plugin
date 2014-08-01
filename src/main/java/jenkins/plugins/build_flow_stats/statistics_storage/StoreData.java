@@ -13,47 +13,76 @@ public class StoreData {
 
 	private PrintStream stream;
 	private String jobName;
+	private CalendarWrapper startDate;
 	private Jenkins jenkins;
 	private Project project;
 	private String rootDir;
 	private String storePath;
+	private File storePathFile;
 	private File buildsPath;
 
-	public StoreData(PrintStream stream, String jobName) {
+	public StoreData(PrintStream stream, String jobName, CalendarWrapper startDate) {
 		this.stream = stream;
 		this.jobName = jobName;
+		stream.println("Collecting and storing data to XML-file for " + jobName);
 		jenkins = Jenkins.getInstance();
 		project = (Project) jenkins.getItem(jobName);
 		rootDir = jenkins.getRootDir().toString();
 		storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
+		storePathFile = new File(storePath);
+		storePathFile.mkdirs();
+		this.startDate = getStartDate(startDate);
 		buildsPath = new File(rootDir + "/jobs/" + jobName + "/builds");
 	}
 
-	public void storeBuildInfoToXML(CalendarWrapper startDate) {
+	public CalendarWrapper getStartDate(CalendarWrapper userStartDate) {
+		File storePathFile = new File(storePath);
+		CalendarWrapper startDate;
+		String[] list = storePathFile.list();
+		if (list == null || list.length == 0) {
+			startDate = userStartDate;
+			stream.println("No previous data found for " + jobName + ". Saving logs from " + startDate.getDate());
+		} else {
+			String latestStoredFile = list[list.length - 1].replace(".xml", "");
+			if (latestStoredFile.compareTo(userStartDate.toString()) > 0) {
+				startDate = new CalendarWrapper(latestStoredFile);
+				stream.println("Data has already been collected from " + userStartDate.getDate());
+				stream.println("Continue storing of logs from " + startDate.getDate());
+			} else {
+				startDate = userStartDate;
+				stream.println("Previous data found for " + jobName + ". Saving logs from " + startDate.getDate());
+			}
+		}
+		return startDate;
+	}
+
+	public void storeBuildInfoToXML() {
 		CalendarWrapper endDate = new CalendarWrapper();
-		stream.println("Collecting and storing data to XML-file for " + jobName);
-		stream.println("Collecting data from " + startDate + " to " + endDate);
-		new File(storePath).mkdirs();
-		while (startDate.compareTo(endDate) <= 0) {
-			ArrayList<Integer> buildNumbers = getBuildNumbers(startDate);
+		CalendarWrapper tempStartDate = new CalendarWrapper(startDate.toString());
+		CalendarWrapper tempEndDate = new CalendarWrapper(startDate.toString());
+		tempEndDate.add();
+		while (tempStartDate.compareTo(endDate) <= 0) {
+			ArrayList<Integer> buildNumbers = getBuildNumbers(tempStartDate, tempEndDate);
 			if (buildNumbers.isEmpty()) {
-				stream.println("No data for " + startDate);
+				stream.println("No data for " + startDate.getDate());
 			} else {
 				BuildList builds = getBuilds(buildNumbers);
-				writeToFile(builds, startDate);
+				writeToFile(builds);
 			}
-			startDate.add();
+			tempStartDate.add();
+			tempEndDate.add();
 		}
 	}
 
-	private ArrayList<Integer> getBuildNumbers(CalendarWrapper date) {
+	private ArrayList<Integer> getBuildNumbers(CalendarWrapper startDate, CalendarWrapper endDate) {
 		FilenameFilter filter = new MyFileFilter();
 		File[] files = buildsPath.listFiles(filter);
 		ArrayList<Integer> buildNumbers = new ArrayList<Integer>();
 		for (int i = 0; i < files.length; i++) {
 			File file = files[i];
 			try {
-				if (file.getCanonicalPath().replaceAll(".*/", "").startsWith(date.toString())) {
+				String buildDate = file.getCanonicalPath().replaceAll(".*/", "");
+				if (buildDate.compareTo(startDate.toString()) > 0 && buildDate.compareTo(endDate.toString()) < 0) {
 					buildNumbers.add(Integer.parseInt(file.toString().replaceAll(".*/", "")));
 				}
 			} catch (IOException e) {
@@ -79,8 +108,8 @@ public class StoreData {
 		return builds;
 	}
 
-	private void writeToFile(BuildList builds, CalendarWrapper startDate) {
-		String filename = startDate + ".xml";
+	private void writeToFile(BuildList builds) {
+		String filename = builds.getLastBuild().getDate() + ".xml";
 		File file = new File(storePath + filename);
 		try {
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));
@@ -95,6 +124,40 @@ public class StoreData {
 			stream.println("Wrote data to " + filename);
 		} catch (IOException e) {
 			e.printStackTrace(); //Fix This Exception
+		}
+	}
+
+	private void appendToFile(BuildList builds, String oldFileName) {
+		String filename = oldFileName + ".xml";
+		File oldFile = new File(storePath + filename);
+		//Reading from old file
+		String lines = "";
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(oldFile));
+			String line;
+			while ((line = reader.readLine()) != null) {
+				lines += line + "\n";
+			}
+			reader.close();
+			oldFile.delete();
+			lines = lines.substring(0, lines.length()-11); //Remove the end tag
+		} catch(Exception e){
+			System.out.println("Error while reading file line by line:" + e.getMessage()); //TODO: Fix this exception
+		}
+		//Writing to new file
+		File newFile = new File(storePath + builds.getLastBuild().getDate());
+		try {
+			BufferedWriter output = new BufferedWriter(new FileWriter(newFile));
+			output.write(lines); //Write info from the old file
+			Iterator<BuildInfo> iterator = builds.iterator();
+			while(iterator.hasNext()) {
+				output.write(iterator.next().getString(1));
+			}
+			output.write("\n</Builds>");
+			output.close();
+			stream.println("Appended data to " + oldFileName);
+		} catch (IOException e) {
+			e.printStackTrace(); //TODO: Fix This Exception
 		}
 	}
 

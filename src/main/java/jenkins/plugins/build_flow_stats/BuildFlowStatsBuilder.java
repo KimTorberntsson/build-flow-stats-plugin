@@ -32,7 +32,7 @@ public class BuildFlowStatsBuilder extends Builder {
 		this.startDate = startDate;
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-			this.startDateObject = new CalendarWrapper(startDate);
+			this.startDateObject = new CalendarWrapper(startDate + "_00-00-00");
 		} else {
 			throw new RuntimeException("Wrong format for start date");
 		}
@@ -49,8 +49,8 @@ public class BuildFlowStatsBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
 		PrintStream stream = listener.getLogger();
-		StoreData data = new StoreData(stream, job);
-		data.storeBuildInfoToXML(startDateObject);
+		StoreData data = new StoreData(stream, job, startDateObject);
+		data.storeBuildInfoToXML();
 		return true;
 	}
 

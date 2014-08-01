@@ -10,11 +10,7 @@ public class CalendarWrapper extends GregorianCalendar{
 
 	public CalendarWrapper() {
 		super();
-		super.set(Calendar.HOUR_OF_DAY, 0);
-		super.set(Calendar.MINUTE, 0);
-		super.set(Calendar.SECOND, 0);
-		super.set(Calendar.MILLISECOND, 0);
-		sdf = new SimpleDateFormat("yyyy-MM-dd");
+		sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 	}
 
 	public CalendarWrapper(String date) {
@@ -22,8 +18,15 @@ public class CalendarWrapper extends GregorianCalendar{
 		try {
 			this.setTime(sdf.parse(date));
 		} catch (ParseException e) {
-			throw new RuntimeException("Could not parse start date");
+			e.printStackTrace(); //TODO:Fix this exception
 		}
+	}
+
+	public void setTimeToZero() {
+		super.set(Calendar.HOUR_OF_DAY, 0);
+		super.set(Calendar.MINUTE, 0);
+		super.set(Calendar.SECOND, 0);
+		super.set(Calendar.MILLISECOND, 0);
 	}
 
 	public void add() {
@@ -36,6 +39,10 @@ public class CalendarWrapper extends GregorianCalendar{
 
 	public String toString() {
 		return sdf.format(super.getTime().getTime());
+	}
+
+	public String getDate() {
+		return toString().replaceAll("_\\d{2}-\\d{2}-\\d{2}", "");
 	}
 
 }

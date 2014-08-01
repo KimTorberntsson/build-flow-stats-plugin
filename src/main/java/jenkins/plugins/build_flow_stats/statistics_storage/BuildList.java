@@ -23,6 +23,10 @@ public class BuildList {
 		return builds.iterator();
 	}
 
+	public BuildInfo getLastBuild() {
+		return builds.get(builds.size()-1);
+	}
+
 	public String getString(int tabLevel) {
 		String buildInfo = "";
 		Iterator<BuildInfo> builds = iterator();

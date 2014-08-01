@@ -13,7 +13,7 @@ public abstract class BuildInfo {
 	public BuildInfo(Build build) {
 		jobName = build.getParent().getFullName();
 		buildNumber = build.getNumber();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
 		date = sdf.format(build.getTime());
 		result = build.getResult().toString();
 	}
@@ -25,6 +25,10 @@ public abstract class BuildInfo {
 		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<Date>" + date + "</Date>";
 		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<Result>" + result + "</Result>";
 		return buildInfo;
+	}
+
+	public String getDate() {
+		return date;
 	}
 
 }
