@@ -13,15 +13,15 @@ public class StoreData {
 
 	private PrintStream stream;
 	private String jobName;
-	private CalendarWrapper startDate;
 	private Jenkins jenkins;
 	private Project project;
 	private String rootDir;
 	private String storePath;
 	private File storePathFile;
+	private String[] oldFiles;
 	private File buildsPath;
 
-	public StoreData(PrintStream stream, String jobName, CalendarWrapper startDate) {
+	public StoreData(PrintStream stream, String jobName) {
 		this.stream = stream;
 		this.jobName = jobName;
 		stream.println("Collecting and storing data to XML-file for " + jobName);
@@ -31,32 +31,26 @@ public class StoreData {
 		storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
 		storePathFile = new File(storePath);
 		storePathFile.mkdirs();
-		this.startDate = getStartDate(startDate);
+		oldFiles = storePathFile.list();
 		buildsPath = new File(rootDir + "/jobs/" + jobName + "/builds");
 	}
 
-	public CalendarWrapper getStartDate(CalendarWrapper userStartDate) {
-		File storePathFile = new File(storePath);
+	public void storeBuildInfoToXML(CalendarWrapper userStartDate) {
 		CalendarWrapper startDate;
-		String[] list = storePathFile.list();
-		if (list == null || list.length == 0) {
+		if (oldFiles == null || oldFiles.length == 0) {
 			startDate = userStartDate;
 			stream.println("No previous data found for " + jobName + ". Saving logs from " + startDate.getDate());
 		} else {
-			String latestStoredFile = list[list.length - 1].replace(".xml", "");
-			if (latestStoredFile.compareTo(userStartDate.toString()) > 0) {
+			String latestStoredFile = oldFiles[oldFiles.length - 1].replace(".xml", "");
+			if (latestStoredFile.compareTo(userStartDate.toString()) < 0) {
+				startDate = userStartDate;
+				stream.println("Previous data found for " + jobName + ". Saving logs from " + startDate.getDate());
+			} else {
 				startDate = new CalendarWrapper(latestStoredFile);
 				stream.println("Data has already been collected from " + userStartDate.getDate());
 				stream.println("Continue storing of logs from " + startDate.getDate());
-			} else {
-				startDate = userStartDate;
-				stream.println("Previous data found for " + jobName + ". Saving logs from " + startDate.getDate());
 			}
 		}
-		return startDate;
-	}
-
-	public void storeBuildInfoToXML() {
 		CalendarWrapper endDate = new CalendarWrapper();
 		CalendarWrapper tempStartDate = new CalendarWrapper(startDate.toString());
 		CalendarWrapper tempEndDate = new CalendarWrapper(startDate.toString());
@@ -64,7 +58,7 @@ public class StoreData {
 		while (tempStartDate.compareTo(endDate) <= 0) {
 			ArrayList<Integer> buildNumbers = getBuildNumbers(tempStartDate, tempEndDate);
 			if (buildNumbers.isEmpty()) {
-				stream.println("No data for " + startDate.getDate());
+				stream.println("No data for " + tempStartDate.getDate());
 			} else {
 				BuildList builds = getBuilds(buildNumbers);
 				writeToFile(builds);
