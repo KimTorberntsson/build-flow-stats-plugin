@@ -35,7 +35,7 @@ public class StoreData {
 		buildsPath = new File(rootDir + "/jobs/" + jobName + "/builds");
 	}
 
-	public void storeBuildInfoToXML(CalendarWrapper userStartDate) {
+	public void storeBuildInfo(CalendarWrapper userStartDate) {
 		CalendarWrapper startDate;
 		if (oldFiles == null || oldFiles.length == 0) {
 			startDate = userStartDate;
@@ -49,6 +49,9 @@ public class StoreData {
 				startDate = new CalendarWrapper(latestStoredFile);
 				stream.println("Data has already been collected from " + userStartDate.getDate());
 				stream.println("Continue storing of logs from " + startDate.getDate());
+				appendToLatestFile(startDate);
+				startDate.setTimeToZero();
+				startDate.add();
 			}
 		}
 		CalendarWrapper endDate = new CalendarWrapper();
@@ -56,15 +59,26 @@ public class StoreData {
 		CalendarWrapper tempEndDate = new CalendarWrapper(startDate.toString());
 		tempEndDate.add();
 		while (tempStartDate.compareTo(endDate) <= 0) {
-			ArrayList<Integer> buildNumbers = getBuildNumbers(tempStartDate, tempEndDate);
-			if (buildNumbers.isEmpty()) {
-				stream.println("No data for " + tempStartDate.getDate());
-			} else {
-				BuildList builds = getBuilds(buildNumbers);
-				writeToFile(builds);
-			}
+			storeBuildInfoToXML(tempStartDate, tempEndDate, false);
 			tempStartDate.add();
 			tempEndDate.add();
+		}
+	}
+
+	private void appendToLatestFile(CalendarWrapper startDate) {
+		CalendarWrapper endDate = new CalendarWrapper(startDate.toString());
+		endDate.setTimeToZero();
+		endDate.add();
+		storeBuildInfoToXML(startDate, endDate, true);
+	}
+
+	private void storeBuildInfoToXML(CalendarWrapper startDate, CalendarWrapper endDate, boolean append) {
+		ArrayList<Integer> buildNumbers = getBuildNumbers(startDate, endDate);
+		if (buildNumbers.isEmpty()) {
+			stream.println("No data for " + startDate.getDate());
+		} else {
+			BuildList builds = getBuilds(buildNumbers);
+			writeToFile(builds, append);
 		}
 	}
 
@@ -102,57 +116,54 @@ public class StoreData {
 		return builds;
 	}
 
-	private void writeToFile(BuildList builds) {
-		String filename = builds.getLastBuild().getDate() + ".xml";
-		File file = new File(storePath + filename);
+	private void writeToFile(BuildList builds, boolean doAppend) {
+		String lines = "";
+		if (doAppend) {
+			lines = getFileInfoAndDelete(oldFiles[oldFiles.length - 1]);
+		}
+		String fileName = builds.getLastBuild().getDate() + ".xml";
+		File file = new File(storePath + fileName);
 		try {
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));
-			output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
-			output.write("\n<Builds>");
+			if (doAppend) {
+				output.write(lines);
+			} else {
+				output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+				output.write("\n<Builds>");
+			}
 			Iterator<BuildInfo> iterator = builds.iterator();
 			while(iterator.hasNext()) {
 				output.write(iterator.next().getString(1));
 			}
 			output.write("\n</Builds>");
 			output.close();
-			stream.println("Wrote data to " + filename);
+			if (doAppend) {
+				stream.println("Appended data to " + fileName + "from " + oldFiles[oldFiles.length - 1]);
+			} else {
+				stream.println("Wrote data to " + fileName);
+			}
+			
 		} catch (IOException e) {
 			e.printStackTrace(); //Fix This Exception
 		}
 	}
 
-	private void appendToFile(BuildList builds, String oldFileName) {
-		String filename = oldFileName + ".xml";
-		File oldFile = new File(storePath + filename);
-		//Reading from old file
+	private String getFileInfoAndDelete(String fileName) {
+		File file = new File(storePath + fileName);
 		String lines = "";
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(oldFile));
+			BufferedReader reader = new BufferedReader(new FileReader(file));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				lines += line + "\n";
 			}
 			reader.close();
-			oldFile.delete();
+			file.delete();
 			lines = lines.substring(0, lines.length()-11); //Remove the end tag
 		} catch(Exception e){
 			System.out.println("Error while reading file line by line:" + e.getMessage()); //TODO: Fix this exception
 		}
-		//Writing to new file
-		File newFile = new File(storePath + builds.getLastBuild().getDate());
-		try {
-			BufferedWriter output = new BufferedWriter(new FileWriter(newFile));
-			output.write(lines); //Write info from the old file
-			Iterator<BuildInfo> iterator = builds.iterator();
-			while(iterator.hasNext()) {
-				output.write(iterator.next().getString(1));
-			}
-			output.write("\n</Builds>");
-			output.close();
-			stream.println("Appended data to " + oldFileName);
-		} catch (IOException e) {
-			e.printStackTrace(); //TODO: Fix This Exception
-		}
+		return lines;
 	}
 
 }

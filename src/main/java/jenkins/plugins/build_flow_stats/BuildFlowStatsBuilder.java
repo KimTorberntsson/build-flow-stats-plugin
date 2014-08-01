@@ -50,7 +50,7 @@ public class BuildFlowStatsBuilder extends Builder {
 	public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
 		PrintStream stream = listener.getLogger();
 		StoreData data = new StoreData(stream, job);
-		data.storeBuildInfoToXML(startDateObject);
+		data.storeBuildInfo(startDateObject);
 		return true;
 	}
 
