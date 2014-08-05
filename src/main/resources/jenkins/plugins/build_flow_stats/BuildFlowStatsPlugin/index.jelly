@@ -37,11 +37,13 @@
 			<h2>${%Data Deletion}</h2>
 			<form action="deleteData">
 			<label>Job: </label>
-			<select name="jobNameToErase">
+			<select name="jobNameToDelete">
 				<j:forEach var="job" items="${it.storedJobs}">
 				<option>${job}</option>
 				</j:forEach>
 			</select>
+			<label> Remove all data for job: </label>
+			<input type="checkbox" name="deleteAll"/>
 			<br/><br/>
 			<label>Start date: </label>
 			<input type="text" name="startDate" size="15" value="2014-04-01"/>

@@ -57,20 +57,27 @@ public class BuildFlowStatsPlugin extends Plugin {
 	}
 
 	public void doDeleteData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
-		String jobName = req.getParameter("jobNameToErase");
-		String startDate = req.getParameter("startDate");
-		String endDate = req.getParameter("endDate");
-		if (startDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.compareTo(startDate) > 0) {
+		String jobNameToDelete = req.getParameter("jobNameToDelete");
+		String deleteAll = req.getParameter("deleteAll");
+		if (deleteAll != null) {
 			req.setAttribute("validDateFormat", true);
-			ArrayList<String> deletedFiles = deleteData(jobName, startDate, endDate);
-			if (!deletedFiles.isEmpty()) {
-				req.setAttribute("filesWereDeleted", true);
-				req.setAttribute("deletedFiles", deletedFiles);
-			} else {
-				req.setAttribute("filesWereDeleted", false);
-			}
+			req.setAttribute("filesWereDeleted", true);
+			req.setAttribute("deletedFiles", deleteData(jobNameToDelete));
 		} else {
-			req.setAttribute("validDateFormat", false);
+			String startDate = req.getParameter("startDate");
+			String endDate = req.getParameter("endDate");
+			if (startDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.compareTo(startDate) > 0) {
+				req.setAttribute("validDateFormat", true);
+				ArrayList<String> deletedFiles = deleteData(jobNameToDelete, startDate, endDate);
+				if (!deletedFiles.isEmpty()) {
+					req.setAttribute("filesWereDeleted", true);
+					req.setAttribute("deletedFiles", deletedFiles);
+				} else {
+					req.setAttribute("filesWereDeleted", false);
+				}
+			} else {
+				req.setAttribute("validDateFormat", false);
+			}
 		}
 		req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/deleteData.jelly").forward(req, res);
 	}
@@ -97,16 +104,12 @@ public class BuildFlowStatsPlugin extends Plugin {
 	}
 
 	public String[] getStoredJobs() {
-		String rootDir = Jenkins.getInstance().getRootDir().toString();
-		String filePath = rootDir + "/build-flow-stats/"; //TODO: Decide path for storage.
-		File folder = new File(filePath);
-		return folder.list();
+		return new File(getFilePath()).list();
 	}
 
 	public ArrayList<String> deleteData(String jobName, String startDate, String endDate) {
-		String rootDir = Jenkins.getInstance().getRootDir().toString();
-		String filePath = rootDir + "/build-flow-stats/" + jobName;//TODO: Decide path for storage.
-		File jobFolder = new File(filePath);
+		String jobFolderName = getFilePath() + jobName;
+		File jobFolder = new File(jobFolderName);
 		String[] allFiles = jobFolder.list();
 		ArrayList<String> deletedFiles = new ArrayList<String>();	
 		for (int i = 0; i < allFiles.length; i++) {
@@ -117,7 +120,29 @@ public class BuildFlowStatsPlugin extends Plugin {
 				deletedFiles.add(file);
 			}
 		}
+		String[] allFilesAfterDeletion = jobFolder.list();
+		if (allFilesAfterDeletion == null || allFilesAfterDeletion.length == 0) {
+			new File(jobFolderName).delete();
+		}
 		return deletedFiles;
+	}
+
+	public ArrayList<String> deleteData(String jobName) {
+		String jobFolderName = getFilePath() + jobName;
+		File jobFolder = new File(jobFolderName);
+		String[] allFiles = jobFolder.list();
+		ArrayList<String> deletedFiles = new ArrayList<String>();	
+		for (int i = 0; i < allFiles.length; i++) {
+			String file = allFiles[i];
+			new File(jobFolder + "/" + file).delete();
+			deletedFiles.add(file);
+		}
+		new File(jobFolderName).delete();
+		return deletedFiles;
+	}
+
+	public String getFilePath() {
+		return Jenkins.getInstance().getRootDir().toString() + "/build-flow-stats/"; //TODO: Decide storage path
 	}
 
 }
