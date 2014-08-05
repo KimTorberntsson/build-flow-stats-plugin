@@ -56,6 +56,40 @@ public class BuildFlowStatsPlugin extends Plugin {
 		req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
 	}
 
+	public void doDeleteData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+		String jobName = req.getParameter("jobNameToErase");
+		String startDate = req.getParameter("startDate");
+		String endDate = req.getParameter("endDate");
+		if (startDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.matches("\\d{4}-\\d{2}-\\d{2}") && endDate.compareTo(startDate) > 0) {
+			req.setAttribute("validDateFormat", true);
+			ArrayList<String> deletedFiles = deleteData(jobName, startDate, endDate);
+			if (!deletedFiles.isEmpty()) {
+				req.setAttribute("filesWereDeleted", true);
+				req.setAttribute("deletedFiles", deletedFiles);
+			} else {
+				req.setAttribute("filesWereDeleted", false);
+			}
+		} else {
+			req.setAttribute("validDateFormat", false);
+		}
+		req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/deleteData.jelly").forward(req, res);
+	}
+
+	public CalendarWrapper getStartDate(int range, String rangeUnits) {
+		CalendarWrapper startDate = new CalendarWrapper();
+		startDate.setTimeToZero();
+		if (rangeUnits.equals("Days")) {
+			startDate.add(Calendar.DAY_OF_MONTH, -range);
+		} else if(rangeUnits.equals("Weeks")) {
+			startDate.add(Calendar.WEEK_OF_MONTH, -range);
+		} else if(rangeUnits.equals("Months")) {
+			startDate.add(Calendar.MONTH, -range);
+		} else {
+			startDate.add(Calendar.YEAR, -range);
+		}
+		return startDate;
+	}
+
 	public BuildTree[] getPresentationData(String jobName, CalendarWrapper startDate) {
 		String rootDir = Jenkins.getInstance().getRootDir().toString();
 		String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
@@ -69,18 +103,21 @@ public class BuildFlowStatsPlugin extends Plugin {
 		return folder.list();
 	}
 
-	public CalendarWrapper getStartDate(int range, String rangeUnits) {
-		CalendarWrapper startDate = new CalendarWrapper();
-		if (rangeUnits.equals("Days")) {
-			startDate.add(Calendar.DAY_OF_MONTH, -range);
-		} else if(rangeUnits.equals("Weeks")) {
-			startDate.add(Calendar.WEEK_OF_MONTH, -range);
-		} else if(rangeUnits.equals("Months")) {
-			startDate.add(Calendar.MONTH, -range);
-		} else {
-			startDate.add(Calendar.YEAR, -range);
+	public ArrayList<String> deleteData(String jobName, String startDate, String endDate) {
+		String rootDir = Jenkins.getInstance().getRootDir().toString();
+		String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
+		File jobFolder = new File(filePath);
+		String[] allFiles = jobFolder.list();
+		ArrayList<String> deletedFiles = new ArrayList<String>();	
+		for (int i = 0; i < allFiles.length; i++) {
+			String file = allFiles[i];
+			String fileDate = file.replaceAll("_\\d{2}-\\d{2}-\\d{2}.xml", "");
+			if (fileDate.compareTo(startDate) >= 0 && fileDate.compareTo(endDate) <= 0) {
+				new File(jobFolder + "/" + file).delete();
+				deletedFiles.add(file);
+			}
 		}
-		return startDate;
+		return deletedFiles;
 	}
 
 }

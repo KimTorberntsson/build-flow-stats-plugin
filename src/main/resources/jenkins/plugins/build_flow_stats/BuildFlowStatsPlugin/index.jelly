@@ -1,27 +1,29 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 	<l:layout title="${%Flow Build Stats Plugin}" permission="${it.requiredPermission}">
+		
 		<l:side-panel>
-	    	<l:tasks>
-	   		<l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
+			<l:tasks>
+				<l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
 			</l:tasks>
-	  	</l:side-panel>
-	  	<l:main-panel>
+		</l:side-panel>
+		
+		<l:main-panel>
 			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${% Build Flow Stats} </h1>
 			<hr/>
 			<h2>${%Data Presentation}</h2>
 			<form action="presentData">
 			<label>Present data for builds from the last: </label>
-			<input type="text" id="presentData_range" name="range" size="5" value="2"/>
-			<select id="presentBuild_rangeUnits" name="rangeUnits">
+			<input type="text" name="range" size="5" value="2"/>
+			<select name="rangeUnits">
 				<option>Days</option>
 				<option selected="true">Weeks</option>
-		     	<option>Months</option>
+				<option>Months</option>
 				<option>Years</option>
 			</select>
-			<br/>
+			<br/><br/>
 			<label>Build Flow Job: </label>
-			<select id ="searchBuild_jobName" name="jobName">
+			<select name="jobName">
 				<j:forEach var="job" items="${it.storedJobs}">
 				<option>${job}</option>
 				</j:forEach>
@@ -32,10 +34,26 @@
 			</form>
 			<br/>
 			<hr/>
-			<h2>${%Data Management}</h2>
-			<input type="submit" class="submit-button" value="${%Erase all data}" name="Submit" />
+			<h2>${%Data Deletion}</h2>
+			<form action="deleteData">
+			<label>Build Flow Job: </label>
+			<select name="jobNameToErase">
+				<j:forEach var="job" items="${it.storedJobs}">
+				<option>${job}</option>
+				</j:forEach>
+			</select>
 			<br/><br/>
+			<label>Start date: </label>
+			<input type="text" name="startDate" size="15" value="2014-04-01"/>
+			<br/><br/>
+			<label>End date: </label>
+			<input type="text" name="endDate" size="15" value="2014-04-02"/>
+			<br/><br/>
+			<input type="submit" class="submit-button" value="${%Erase selected data}" name="Submit" />
+			</form>
+			<br/>
 			<hr/>
 		</l:main-panel>
+
 	</l:layout> 
 </j:jelly>
