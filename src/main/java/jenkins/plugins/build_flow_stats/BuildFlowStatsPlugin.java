@@ -92,20 +92,20 @@ public class BuildFlowStatsPlugin extends Plugin {
 
 	public BuildTree[] getPresentationData(String jobName, CalendarWrapper startDate) {
 		String rootDir = Jenkins.getInstance().getRootDir().toString();
-		String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
+		String filePath = rootDir + "/build-flow-stats/" + jobName; //TODO: Decide path for storage.
 		return XMLJobFactory.getPresentationDataFromFile(filePath, startDate);
 	}
 
 	public String[] getStoredJobs() {
 		String rootDir = Jenkins.getInstance().getRootDir().toString();
-		String filePath = rootDir + "/userContent/build-flow-stats/";
+		String filePath = rootDir + "/build-flow-stats/"; //TODO: Decide path for storage.
 		File folder = new File(filePath);
 		return folder.list();
 	}
 
 	public ArrayList<String> deleteData(String jobName, String startDate, String endDate) {
 		String rootDir = Jenkins.getInstance().getRootDir().toString();
-		String filePath = rootDir + "/userContent/build-flow-stats/" + jobName;
+		String filePath = rootDir + "/build-flow-stats/" + jobName;//TODO: Decide path for storage.
 		File jobFolder = new File(filePath);
 		String[] allFiles = jobFolder.list();
 		ArrayList<String> deletedFiles = new ArrayList<String>();	

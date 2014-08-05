@@ -28,7 +28,7 @@ public class StoreData {
 		jenkins = Jenkins.getInstance();
 		project = (Project) jenkins.getItem(jobName);
 		rootDir = jenkins.getRootDir().toString();
-		storePath = rootDir + "/userContent/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
+		storePath = rootDir + "/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
 		storePathFile = new File(storePath);
 		storePathFile.mkdirs();
 		oldFiles = storePathFile.list();
@@ -105,13 +105,15 @@ public class StoreData {
 		Iterator<Integer> iterator = buildNumbers.iterator();
 		while (iterator.hasNext()) {
 			Build build = (Build) project.getBuildByNumber(iterator.next());
-			BuildInfo buildInfo;
-			if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
-				buildInfo = new FlowBuild(build);
-			} else {
-				buildInfo = new NonFlowBuild(build);
+			if (build != null) {
+				BuildInfo buildInfo;
+				if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
+					buildInfo = new FlowBuild(build);
+				} else {
+					buildInfo = new NonFlowBuild(build);
+				}
+				builds.addBuildInfo(buildInfo);
 			}
-			builds.addBuildInfo(buildInfo);
 		}
 		return builds;
 	}

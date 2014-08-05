@@ -22,7 +22,7 @@
 				<option>Years</option>
 			</select>
 			<br/><br/>
-			<label>Build Flow Job: </label>
+			<label>Job: </label>
 			<select name="jobName">
 				<j:forEach var="job" items="${it.storedJobs}">
 				<option>${job}</option>
@@ -36,7 +36,7 @@
 			<hr/>
 			<h2>${%Data Deletion}</h2>
 			<form action="deleteData">
-			<label>Build Flow Job: </label>
+			<label>Job: </label>
 			<select name="jobNameToErase">
 				<j:forEach var="job" items="${it.storedJobs}">
 				<option>${job}</option>
