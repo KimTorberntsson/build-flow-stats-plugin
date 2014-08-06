@@ -151,6 +151,7 @@ public class StoreData {
 				} else {
 					buildInfo = new RegularBuild(build);
 				}
+				build = null;
 				builds.addBuildInfo(buildInfo);
 			}
 		}

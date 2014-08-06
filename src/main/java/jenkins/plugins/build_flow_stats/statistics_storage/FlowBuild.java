@@ -34,6 +34,7 @@ public class FlowBuild extends BuildInfo {
 					} else {
 						buildInfo = new RegularBuild(subBuild);
 					}
+					subBuild = null;
 					this.subBuilds.addBuildInfo(buildInfo);
 				}
 			} catch (ExecutionException ee) {
