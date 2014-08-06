@@ -2,6 +2,9 @@ package jenkins.plugins.build_flow_stats;
 
 import java.util.*;
 
+/**
+ * List of failure causes. 
+ */
 public class FailureCauseList {
 	
 	private Map<String, FailureCause> failureCauses;

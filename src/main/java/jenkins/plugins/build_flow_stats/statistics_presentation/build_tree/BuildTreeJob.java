@@ -1,5 +1,9 @@
 package jenkins.plugins.build_flow_stats;
 
+/**
+ * One of the two build tree classes. It contains a job name
+ * and the build results for the job.
+ */
 public class BuildTreeJob extends BuildTreeElement {
 
 	private String jobName;

@@ -6,6 +6,12 @@ import com.cloudbees.plugins.flow.FlowRun;
 import com.cloudbees.plugins.flow.JobInvocation;
 import java.util.concurrent.ExecutionException;
 
+/**
+ * Contains the relevant information for a flow build.
+ * It has the information of a regular build, except the information 
+ * about failure cause, and a list of subbuilds that are associated 
+ * with the build.
+ */
 public class FlowBuild extends BuildInfo {
 
 	protected BuildList subBuilds;
@@ -26,7 +32,7 @@ public class FlowBuild extends BuildInfo {
 					if (subBuild.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
 						buildInfo = new FlowBuild(subBuild);
 					} else {
-						buildInfo = new NonFlowBuild(subBuild);
+						buildInfo = new RegularBuild(subBuild);
 					}
 					this.subBuilds.addBuildInfo(buildInfo);
 				}

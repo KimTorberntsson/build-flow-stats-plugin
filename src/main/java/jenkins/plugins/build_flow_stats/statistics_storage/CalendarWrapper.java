@@ -4,6 +4,9 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
+/**
+ * Wrapper for a GregorianCalendar to make date handling easier
+ */
 public class CalendarWrapper extends GregorianCalendar{
 
 	private SimpleDateFormat sdf;

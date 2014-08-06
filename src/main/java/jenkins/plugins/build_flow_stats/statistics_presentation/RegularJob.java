@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-public class NonFlowJob extends Job {
+/**
+ * Contains the relevant information for a regular job i.e. a job that 
+ * is not a job that uses the Build Flow plugin. 
+ */
+public class RegularJob extends Job {
 	
 	protected FailureCauseList failureCauses;
 
-	public NonFlowJob(String jobName) {
+	public RegularJob(String jobName) {
 		super(jobName);
 		failureCauses = new FailureCauseList();
 	}

@@ -3,6 +3,9 @@ package jenkins.plugins.build_flow_stats;
 import org.w3c.dom.Node;
 import java.util.ArrayList;
 
+/**
+ * Parent class for FlowJob and RegularJob
+ */
 public abstract class Job {
 
 	protected String jobName;

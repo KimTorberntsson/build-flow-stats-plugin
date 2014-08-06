@@ -8,8 +8,21 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import java.io.File;
 
+/**
+ * Factory class for creating the necessary objects for the presentation. 
+ * Some processing of the data has to be done before presenting, since
+ * the information in the XML-files are stored per build and not per job.
+ * The presentation is made on job-level and not build-level, and 
+ * therefore these new objects have to be created from the stored data.
+ */
 public class XMLJobFactory {
 	
+	/**
+	 * Create build objects for presentation. Collects data from the 
+	 * specified folder from the specified start date up until now.
+	 * @param filePath The path from where the data is fetched
+	 * @param startDate Defines the start date for the data presentation
+	 */
 	public static BuildTree[] getPresentationDataFromFile(String filePath, CalendarWrapper startDate) {
 		
 		JobList allJobs = new JobList();
@@ -42,6 +55,11 @@ public class XMLJobFactory {
 		return presentationData; 
 	}
 
+	/**
+	 * Add build from XML Node object. This is the method that is used everytime
+	 * the information of a build stored in an XML file should be added to the job
+	 * objects.
+	 */
 	public static void addBuildsFromNode(Node node, JobList jobs, FailureCauseList allFailureCauses) {
 		NodeList childNodes = node.getChildNodes();
 		for (int i = 0; i < childNodes.getLength(); i ++) {
@@ -54,7 +72,7 @@ public class XMLJobFactory {
 			} else if (rootElementChild.getNodeName().equals("Build")) {
 				Element nonFlowBuildElement = (Element) rootElementChild;
 				String jobName = nonFlowBuildElement.getElementsByTagName("JobName").item(0).getTextContent();
-				jobs.addNonFlowJob(jobName);
+				jobs.addRegularJob(jobName);
 				jobs.getJob(jobName).addBuildFromXML(rootElementChild, allFailureCauses);
 			}
 		}

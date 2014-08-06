@@ -2,6 +2,11 @@ package jenkins.plugins.build_flow_stats;
 
 import java.util.ArrayList;
 
+/**
+ * Contains information about a failure cause, more specifically
+ * the name of the failure cause and the failure builds that are 
+ * associated with that build. 
+ */
 public class FailureCause {
 	
 	private String failureCauseName;

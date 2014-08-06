@@ -2,11 +2,14 @@ package jenkins.plugins.build_flow_stats;
 
 import hudson.model.Build;
 
-public class NonFlowBuild extends BuildInfo {
+/**
+ * Contains the relevant information for a regular build
+ */
+public class RegularBuild extends BuildInfo {
 
 	protected String failureCause;
 
-	public NonFlowBuild(Build build) {
+	public RegularBuild(Build build) {
 		super(build);
 		failureCause = "";
 		if (!result.equals("SUCCESS")) {

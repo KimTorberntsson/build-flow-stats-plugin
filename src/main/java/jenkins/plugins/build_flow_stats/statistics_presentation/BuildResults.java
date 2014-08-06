@@ -2,6 +2,11 @@ package jenkins.plugins.build_flow_stats;
 
 import java.text.DecimalFormat;
 
+/**
+ * Contains information about build results. It has methods for 
+ * increasing each result type and a toString method that 
+ * is used for the presentation.
+ */
 public class BuildResults {
 
 	private int successes;

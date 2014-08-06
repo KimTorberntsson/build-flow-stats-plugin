@@ -2,6 +2,10 @@ package jenkins.plugins.build_flow_stats;
 
 import java.util.ArrayList;
 
+/**
+ * One of the two build tree classes. It contains a failure cause name
+ * and a list of FailureBuilds associated with that failure cause.
+ */
 public class BuildTreeFailureCause extends BuildTreeElement {
 
 	private String failureCauseName;

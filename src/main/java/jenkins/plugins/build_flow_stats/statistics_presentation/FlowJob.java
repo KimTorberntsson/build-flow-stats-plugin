@@ -4,6 +4,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import java.util.ArrayList;
 
+/**
+ * Contains the relevant information for a flow job i.e a job that uses
+ * the Build Flow plugin. It contains a list of subjobs associated with
+ * the flow job.
+ */
 public class FlowJob extends Job {
 
 	protected JobList subJobs;
@@ -17,8 +22,8 @@ public class FlowJob extends Job {
 		subJobs.addFlowJob(flowJobName);
 	}
 
-	public void addNonFlowJob(String nonFlowJobName) {
-		subJobs.addNonFlowJob(nonFlowJobName);
+	public void addRegularJob(String regularJobName) {
+		subJobs.addRegularJob(regularJobName);
 	}
 
 	public void addBuildFromXML(Node flowBuildNode, FailureCauseList allFailureCauses) {

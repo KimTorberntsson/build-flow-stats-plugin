@@ -5,6 +5,9 @@ import java.util.TreeMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+/**
+ * List that contain job objects
+ */
 public class JobList {
 
 	private Map<String, Job> jobs;
@@ -19,9 +22,9 @@ public class JobList {
 		}
 	}
 
-	public void addNonFlowJob(String nonFlowJobName) {
-		if (jobs.isEmpty() || !jobs.containsKey(nonFlowJobName)) {
-			jobs.put(nonFlowJobName, new NonFlowJob(nonFlowJobName));
+	public void addRegularJob(String regularJobName) {
+		if (jobs.isEmpty() || !jobs.containsKey(regularJobName)) {
+			jobs.put(regularJobName, new RegularJob(regularJobName));
 		}
 	}
 

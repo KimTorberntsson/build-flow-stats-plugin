@@ -3,6 +3,9 @@ package jenkins.plugins.build_flow_stats;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * List that contain build objects.
+ */
 public class BuildList {
 
 	private ArrayList<BuildInfo> builds;

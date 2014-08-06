@@ -16,8 +16,9 @@ import hudson.util.*;
 import javax.servlet.ServletException;
 
 /**
- * This Builder stores information about flowbuilds into XML-files that can later be accessed
- * by the Plugin for presenting statistics.
+ * This Builder provides a BuildStep that stores information about 
+ * builds into XML-files. These can later be accessed by the plugin for 
+ * presenting statistics.
  * @author Kim Torberntsson
  */
 public class BuildFlowStatsBuilder extends Builder {
@@ -66,6 +67,9 @@ public class BuildFlowStatsBuilder extends Builder {
 			return "Store Flow Build Statistics";
 		}
 
+		/**
+		 * Fill the list with the names of all jobs in the Jenkins instance
+		 */
 		public ListBoxModel doFillJobItems() {
 			ListBoxModel items = new ListBoxModel();
 			Jenkins jenkins = Jenkins.getInstance();
@@ -80,6 +84,9 @@ public class BuildFlowStatsBuilder extends Builder {
 			return items;
 		}
 
+		/**
+		 * Check that the start date has the right format
+		 */
 		public FormValidation doCheckStartDate(@QueryParameter String value) throws IOException, ServletException {
 			if (value.matches("\\d{4}-\\d{2}-\\d{2}")) {
 				return FormValidation.ok();

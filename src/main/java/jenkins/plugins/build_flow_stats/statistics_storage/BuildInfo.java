@@ -3,6 +3,9 @@ package jenkins.plugins.build_flow_stats;
 import java.text.SimpleDateFormat;
 import hudson.model.Build;
 
+/**
+ * Parent class for FlowBuild and RegularBuild
+ */
 public abstract class BuildInfo {
 
 	protected String jobName;
