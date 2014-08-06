@@ -33,7 +33,7 @@ public class StoreData {
 	public StoreData(PrintStream stream, String jobName) {
 		this.stream = stream;
 		this.jobName = jobName;
-		stream.println("Collecting and storing data to XML-file for " + jobName);
+		stream.println("\nCollecting and storing data to XML-file for " + jobName);
 		jenkins = Jenkins.getInstance();
 		project = (Project) jenkins.getItem(jobName);
 		rootDir = jenkins.getRootDir().toString();

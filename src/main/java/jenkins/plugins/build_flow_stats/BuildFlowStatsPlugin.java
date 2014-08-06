@@ -64,6 +64,7 @@ public class BuildFlowStatsPlugin extends Plugin {
 	 */
 	public void doDeleteData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		String jobNameToDelete = req.getParameter("jobNameToDelete");
+		req.setAttribute("jobNameToDelete", jobNameToDelete);
 		String deleteAll = req.getParameter("deleteAll");
 		if (deleteAll != null) {
 			req.setAttribute("validDateFormat", true);
