@@ -24,6 +24,7 @@ public class StoreData {
 	private File storePathFile;
 	private String[] oldFiles;
 	private File buildsPath;
+	private FailureAnalyser analyser;
 
 	/**
  	* Constructor for the StoreData class
@@ -34,14 +35,16 @@ public class StoreData {
 		this.stream = stream;
 		this.jobName = jobName;
 		stream.println("\nCollecting and storing data to XML-file for " + jobName);
-		jenkins = Jenkins.getInstance();
-		project = (Project) jenkins.getItem(jobName);
-		rootDir = jenkins.getRootDir().toString();
-		storePath = rootDir + "/build-flow-stats/" + jobName + "/"; //TODO: Decide path for storage.
-		storePathFile = new File(storePath);
+		this.jenkins = Jenkins.getInstance();
+		this.project = (Project) jenkins.getItem(jobName);
+		String jenkinsRootDir = jenkins.getRootDir().toString();
+		this.rootDir = jenkinsRootDir + "/build-flow-stats/"; //TODO: Decide path for storage.
+		this.storePath = rootDir + "data/" + jobName + "/"; 
+		this.storePathFile = new File(storePath);
 		storePathFile.mkdirs();
-		oldFiles = storePathFile.list();
-		buildsPath = new File(rootDir + "/jobs/" + jobName + "/builds");
+		this.oldFiles = storePathFile.list();
+		this.buildsPath = new File(jenkinsRootDir + "/jobs/" + jobName + "/builds");
+		analyser = new FailureAnalyser(rootDir + "FailureAnalysis/FailureCauses.xml");
 	}
 
 	/**
@@ -147,9 +150,9 @@ public class StoreData {
 			if (build != null) {
 				BuildInfo buildInfo;
 				if (build.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
-					buildInfo = new FlowBuild(build);
+					buildInfo = new FlowBuild(build, analyser);
 				} else {
-					buildInfo = new RegularBuild(build);
+					buildInfo = new RegularBuild(build, analyser);
 				}
 				build = null;
 				builds.addBuildInfo(buildInfo);

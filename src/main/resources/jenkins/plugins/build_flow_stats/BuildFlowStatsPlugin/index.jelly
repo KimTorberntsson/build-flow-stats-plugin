@@ -4,12 +4,12 @@
 		
 		<l:side-panel>
 			<l:tasks>
-				<l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
+				<l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}"/>
 			</l:tasks>
 		</l:side-panel>
 		
 		<l:main-panel>
-			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50" /> ${% Build Flow Stats} </h1>
+			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/> ${% Build Flow Stats} </h1>
 			<hr/>
 			<h2>${%Data Presentation}</h2>
 			<form action="presentData">
@@ -30,7 +30,7 @@
 			</select>
 			<br/>
 			<br/>
-			<input type="submit" class="submit-button" value="${%Present Data}" name="Submit" />
+			<input type="submit" class="submit-button" value="${%Present Data}" name="Submit"/>
 			</form>
 			<br/>
 			<hr/>
@@ -51,7 +51,7 @@
 			<label>End date: </label>
 			<input type="text" name="endDate" size="15" value="2014-04-02"/>
 			<br/><br/>
-			<input type="submit" class="submit-button" value="${%Erase selected data}" name="Submit" />
+			<input type="submit" class="submit-button" value="${%Erase selected data}" name="Submit"/>
 			</form>
 			<br/>
 			<hr/>

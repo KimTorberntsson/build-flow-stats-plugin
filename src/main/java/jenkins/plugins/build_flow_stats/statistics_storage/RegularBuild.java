@@ -9,36 +9,12 @@ public class RegularBuild extends BuildInfo {
 
 	protected String failureCause;
 
-	public RegularBuild(Build build) {
-		super(build);
+	public RegularBuild(Build build, FailureAnalyser analyser) {
+		super(build, analyser);
 		failureCause = "";
 		if (!result.equals("SUCCESS")) {
-			failureCause = getFailureCause(result);
+			failureCause = analyser.analyseBuildForFailures(build).getName();
 		}
-	}
-
-	//The logs should eventually be analysed instead of this mumbojumbo of course
-	private String getFailureCause(String result) {
-		String failureCause = "";
-		if (result.equals("UNSTABLE")) {
-			failureCause = "Unstable Build";
-		} else if (result.equals("NOT_BUILT")) {
-			failureCause = "Not Built";
-		} else if (result.equals("ABORTED")) {
-			failureCause = "Aborted";
-		} else {
-			double random = Math.random();
-			if (random < 0.25) {
-				failureCause = "Temporary fail explanation 1"; 
-			} else if (0.25 <= random && random < 0.5) {
-				failureCause = "Temporary fail explanation 2"; 
-			} else if (0.5 <= random && random < 0.75) {
-				failureCause = "Temporary fail explanation 3"; 
-			} else {
-				failureCause = "Temporary fail explanation 4"; 
-			}
-		}
-		return failureCause;
 	}
 
 	public String getString(int tabLevel) {

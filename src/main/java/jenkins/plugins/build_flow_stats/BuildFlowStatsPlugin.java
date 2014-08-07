@@ -168,7 +168,7 @@ public class BuildFlowStatsPlugin extends Plugin {
 	 * @return the storage path
 	 */
 	public static String getStoregePath() {
-		return Jenkins.getInstance().getRootDir().toString() + "/build-flow-stats/"; //TODO: Decide storage path
+		return Jenkins.getInstance().getRootDir().toString() + "/build-flow-stats/data/"; //TODO: Decide storage path
 	}
 
 }

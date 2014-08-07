@@ -8,12 +8,14 @@ import hudson.model.Build;
  */
 public abstract class BuildInfo {
 
+	protected FailureAnalyser analyser;
 	protected String jobName;
 	protected int buildNumber;
 	protected String date;
 	protected String result;
 
-	public BuildInfo(Build build) {
+	public BuildInfo(Build build, FailureAnalyser analyser) {
+		this.analyser = analyser;
 		jobName = build.getParent().getFullName();
 		buildNumber = build.getNumber();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");

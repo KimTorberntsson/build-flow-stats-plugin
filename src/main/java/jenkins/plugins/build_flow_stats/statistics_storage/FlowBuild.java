@@ -16,8 +16,8 @@ public class FlowBuild extends BuildInfo {
 
 	protected BuildList subBuilds;
 
-	public FlowBuild(Build build) {
-		super(build);
+	public FlowBuild(Build build, FailureAnalyser analyser) {
+		super(build, analyser);
 		subBuilds = new BuildList();
 		addSubBuilds((FlowRun) build);
 	}
@@ -30,9 +30,9 @@ public class FlowBuild extends BuildInfo {
 				if (subBuild != null && !subBuild.getParent().getFullName().equals(flowBuild.getParent().getFullName())) {
 					BuildInfo buildInfo;
 					if (subBuild.getClass().toString().equals("class com.cloudbees.plugins.flow.FlowRun")) {
-						buildInfo = new FlowBuild(subBuild);
+						buildInfo = new FlowBuild(subBuild, analyser);
 					} else {
-						buildInfo = new RegularBuild(subBuild);
+						buildInfo = new RegularBuild(subBuild, analyser);
 					}
 					subBuild = null;
 					this.subBuilds.addBuildInfo(buildInfo);
