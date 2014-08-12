@@ -14,6 +14,7 @@ import java.io.File;
  * the information in the XML-files are stored per build and not per job.
  * The presentation is made on job-level and not build-level, and 
  * therefore these new objects have to be created from the stored data.
+ * @author Kim Torberntsson
  */
 public class XMLJobFactory {
 	
@@ -70,8 +71,8 @@ public class XMLJobFactory {
 				jobs.addFlowJob(jobName);
 				jobs.getJob(jobName).addBuildFromXML(rootElementChild, allFailureCauses);
 			} else if (rootElementChild.getNodeName().equals("Build")) {
-				Element nonFlowBuildElement = (Element) rootElementChild;
-				String jobName = nonFlowBuildElement.getElementsByTagName("JobName").item(0).getTextContent();
+				Element regularBuildElement = (Element) rootElementChild;
+				String jobName = regularBuildElement.getElementsByTagName("JobName").item(0).getTextContent();
 				jobs.addRegularJob(jobName);
 				jobs.getJob(jobName).addBuildFromXML(rootElementChild, allFailureCauses);
 			}

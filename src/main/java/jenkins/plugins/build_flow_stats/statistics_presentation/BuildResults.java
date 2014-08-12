@@ -6,16 +6,44 @@ import java.text.DecimalFormat;
  * Contains information about build results. It has methods for 
  * increasing each result type and a toString method that 
  * is used for the presentation.
+ * @author Kim Torberntsson
  */
 public class BuildResults {
 
+	/**
+	 * number of successful builds
+	 */
 	private int successes;
+
+	/**
+	 * number of failured builds
+	 */
 	private int failures;
+
+	/**
+	 * number of aborted builds
+	 */
 	private int aborts;
+
+	/**
+	 * number of unstable builds
+	 */
 	private int unstables;
+
+	/**
+	 * number of nobuilds
+	 */
 	private int nobuilds;
+	
+	/**
+	 * the total number of builds
+	 */
 	private int totalbuilds;
 
+	/**
+	 * Constructor for creating an build result object
+	 * without any data
+	 */
 	public BuildResults() {
 		successes = 0;
 		failures = 0;
@@ -50,6 +78,10 @@ public class BuildResults {
 		totalbuilds ++;
 	}
 
+	/**
+	 * Calculates the failure rate for the build results.
+	 * @return the failed builds percentage
+	 */
 	public double getFailureRate() {
 		if (totalbuilds == 0) {
 			return 0;
@@ -58,6 +90,10 @@ public class BuildResults {
 		}	
 	}
 
+	/**
+	 * Creates a string with the data
+	 * @return the data string
+	 */
 	public String toString() {
 		return "[Total Builds: " + totalbuilds + ", Successes: " + successes 
 		+ ", Failures: " + failures + ", Aborts: "+ aborts 

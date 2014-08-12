@@ -7,26 +7,56 @@ import java.util.ListIterator;
 import hudson.model.Build;
 import hudson.model.Project;
 import jenkins.model.Jenkins;
-import hudson.util.RunList;
 
 /**
  * Main class for storing data. Each StoreData-object is responsible for
- * the data storage of the job defined by the variable jobName.
+ * the data storage of the job defined by the variable jobName. Store Data
+ * objects are created and data is stored when the build step is called.
+ * @author Kim Torberntsson
  */
 public class StoreData {
 
+	/**
+	 * stream for printing to the jobconsole
+	 */
 	private PrintStream stream;
+
+	/**
+	 * the name of the job from which data will be stored
+	 */
 	private String jobName;
+
+	/**
+	 * the path where all the data is stored
+	 */
 	private File storePath;
+
+	/**
+	 * list of all the files that contain data for the job name
+	 */
 	private String[] oldFiles;
+
+	/**
+	 * the path where all data for the builds of the job are stored .i.e the path
+	 * where jenkins stores data for the relevant builds
+	 */
 	private File buildsPath;
+
+	/**
+	 * the object for a project, in our case the object from where all information
+	 * about the job can be retrieved.
+	 */
 	private Project project;
+	
+	/**
+	 * analyser object for failure cause analysis
+	 */
 	private FailureAnalyser analyser;
 
 	/**
  	* Constructor for the StoreData class
- 	* @param stream A Printstream object for the log
- 	* @param jobName Defines the job that information should be collected for
+ 	* @param stream printstream object for the log
+ 	* @param jobName defines the job that information should be collected for
  	*/
 	public StoreData(PrintStream stream, String jobName) {
 		this.stream = stream;
@@ -113,7 +143,7 @@ public class StoreData {
 	 * build objects for better performance and less memory usage.
 	 * @param startDate The first date from which information is stored
 	 * @param endDate The last date from which information is stored
-	 * @return Array with the build numbers.
+	 * @return array with the build numbers.
 	 */
 	private ArrayList<Integer> getBuildNumbers(CalendarWrapper startDate, CalendarWrapper endDate) {
 		FilenameFilter filter = new MyFileFilter();

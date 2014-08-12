@@ -10,18 +10,46 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 import java.lang.RuntimeException;
 
+/**
+ * Contains information about a failure cause, in this case the name, 
+ * description and patterns that should give a match.
+ * @author Kim Torberntsson
+ */
 public class FailureCauseRule {
 
+	/**
+	 * the name of the failure cause
+	 */
 	private String name;
+
+	/**
+	 * the description for the failure cause
+	 */
 	private String description;
+
+	/**
+	 * a list of all the patterns associated with the failure cause
+	 */
 	private ArrayList<Pattern> patterns;
 
+	/**
+	 * Base constructor that stores only a description and a name
+	 * @param  name the name
+	 * @param  description the description
+	 */
 	public FailureCauseRule(String name, String description) {
 		this.name = name;
 		this.description = description;
 		patterns = new ArrayList<Pattern>();
 	}
 
+	/**
+	 * Constructor that also stores a string of patterns. The patterns are used
+	 * to identify the failures for the logs.
+	 * @param  name the name
+	 * @param  description the description
+	 * @param  patterns the patterns
+	 */
 	public FailureCauseRule(String name, String description, String[] patterns) {
 		this(name, description);
 		for (int i = 0; i < patterns.length; i++) {
@@ -29,6 +57,11 @@ public class FailureCauseRule {
 		}
 	}
 
+	/**
+	 * Constructor that creates the failure cause from an Element 
+	 * object. This is used when creating objects from XML-file.
+	 * @param  element the element from the XML-file
+	 */
 	public FailureCauseRule(Element element) {
 		this(element.getElementsByTagName("Name").item(0).getTextContent(), 
 			 element.getElementsByTagName("Description").item(0).getTextContent());
@@ -38,6 +71,10 @@ public class FailureCauseRule {
 		}
 	}
 
+	/**
+	 * Adds a pattern for the failure cause
+	 * @param pattern the pattern to add
+	 */
 	public void addPattern(String pattern) {
 		patterns.add(Pattern.compile(pattern));
 	}
@@ -54,25 +91,26 @@ public class FailureCauseRule {
 		return patterns;
 	}
 
-	public boolean matches(AbstractBuild build) {
-		try {
-			BufferedReader reader = new BufferedReader(build.getLogReader());
-			String line;
-			while ((line = reader.readLine()) != null) {
-				Iterator<Pattern> iterator = patterns.iterator();
-				while(iterator.hasNext()) {
-					if (iterator.next().matcher(line).matches()) {
-						return true;
-					}
-				}
+	/**
+	 * Checks if the line matches any of the failure cause patterns
+	 * @param  line the line that gets matched
+	 * @return returns the result of the matching
+	 */
+	public boolean matches(String line) {
+		Iterator<Pattern> iterator = patterns.iterator();
+		while(iterator.hasNext()) {
+			if (iterator.next().matcher(line).matches()) {
+				return true;
 			}
-			reader.close();
-			return false;
-		} catch (IOException e) {
-			throw new RuntimeException("Could not analyse log for " + build); //TODO:Fix This Exception
 		}
+		return false;
 	}
 
+	/**
+	 * Returns a string with information about the failure cause in a
+	 * format appropiate for XML-files.
+	 * @return the string with the info.
+	 */
 	public String toString() {
 		String ret = "\n\t<FailureCause>";
 		ret += "\n\t\t<Name>" + name + "</Name>";

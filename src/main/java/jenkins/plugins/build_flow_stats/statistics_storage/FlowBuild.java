@@ -11,17 +11,33 @@ import java.util.concurrent.ExecutionException;
  * It has the information of a regular build, except the information 
  * about failure cause, and a list of subbuilds that are associated 
  * with the build.
+ * @author Kim Torberntsson
  */
 public class FlowBuild extends BuildInfo {
 
+	/**
+	 * list of the subbuilds for the flow build
+	 */
 	protected BuildList subBuilds;
 
+	/**
+	 * Creates a flow build object and adds information from the jenkins build
+	 * object. The analyser is used for analysing failure causes.
+	 * @param  build the jenkins build object from where the information is gathered
+	 * @param  analyser for failure cause analysis
+	 */
 	public FlowBuild(Build build, FailureAnalyser analyser) {
 		super(build, analyser);
 		subBuilds = new BuildList();
 		addSubBuilds((FlowRun) build);
 	}
 
+	/**
+	 * Adds information about subbuilds from the jenkins build 
+	 * object to the flow build. Note that the method is recursive making
+	 * it possible to have multiple levels of flow builds.
+	 * @param flowBuild the flow build object from which data is collected
+	 */
 	private void addSubBuilds(FlowRun flowBuild) {
 		Iterator<JobInvocation> subBuilds = flowBuild.getJobsGraph().vertexSet().iterator();
 		while (subBuilds.hasNext()) {
@@ -45,6 +61,11 @@ public class FlowBuild extends BuildInfo {
 		}
 	}
 
+	/**
+	 * Returns a string with the information that is needed for storage to XML-file.
+	 * @param  tabLevel the tab level that should be used
+	 * @return string with the information for XML-storage
+	 */
 	public String getString(int tabLevel) {
 		String buildInfo = "";
 		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<FlowBuild>";

@@ -44,9 +44,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 			return "Stores and presents data about builds and subbuilds from the Build Flow Plugin";
 		}
 	}
-
+	
 	/**
 	 * Present data with the options selected by the user
+	 * @param  req the request
+	 * @param  res the responce
+	 * @throws ServletException if some server issues occur
+	 * @throws IOException      if some IO issues occur
 	 */
 	public void doPresentData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		req.setAttribute("jobName", req.getParameter("jobName"));
@@ -58,9 +62,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 		req.setAttribute("allFailureCauses", presentationData[1]);
 		req.getView(this, Globals.dataPresentationView).forward(req, res);
 	}
-
+	
 	/**
-	 * Delete data with the options selected by the user
+	 * Delete data with the options selected by the use
+	 * @param  req the request
+	 * @param  res the responce
+	 * @throws ServletException if some server issues occur
+	 * @throws IOException      if some IO issues occur
 	 */
 	public void doDeleteData(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		String jobNameToDelete = req.getParameter("jobNameToDelete");
@@ -88,9 +96,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 		}
 		req.getView(this, Globals.dataDeletionView).forward(req, res);
 	}
-
+	
 	/**
-	 * Create FailureAnalyser from XML-file and get to the edit view.
+	 * Create FailureAnalyser from XML-file and get to the edit view
+	 * @param  req the request
+	 * @param  res the responce
+	 * @throws ServletException if some server issues occur
+	 * @throws IOException      if some IO issues occur
 	 */
 	public void doEditFailureCauses(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		File failureAnalysisFile = new File(Globals.failureAnalysisFileName);
@@ -100,9 +112,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 		}
 		req.getView(this, Globals.editFailureCausesView).forward(req, res);
 	}
-
+	
 	/**
 	 * Write failure causes changes to XML and get to a page displaying the results.
+	 * @param  req the request
+	 * @param  res the responce
+	 * @throws ServletException if some server issues occur
+	 * @throws IOException      if some IO issues occur
 	 */
 	public void doStoreFailureCauseChanges(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
 		FailureAnalyser analyser = new FailureAnalyser();
@@ -123,10 +139,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 		analyser.writeToXML(Globals.failureAnalysisFileName);
 		req.getView(this, Globals.indexView).forward(req, res);
 	}
-
+	
 	/**
-	 * Calculate the start date that the user has selected and returns a CalendarWrapper object
-	 * @return the start date as a CalendarWrapper object
+	 * Calculate the start date by subtracting time from the current 
+	 * date and time according to user options.
+	 * @param  range the amount for the time subtraction
+	 * @param  rangeUnits the type of unit for the time subtraction
+	 * @return the calculated start date
 	 */
 	public CalendarWrapper getStartDate(int range, String rangeUnits) {
 		CalendarWrapper startDate = new CalendarWrapper();
@@ -144,7 +163,10 @@ public class BuildFlowStatsPlugin extends Plugin {
 	}
 
 	/**
-	 * Create the Build Tree with the options defined by the user
+	 * Create the Build Tree with the options defined by the use
+	 * @param  jobName the name of the job from which data should be collected
+	 * @param  startDate the start date for the data collection
+	 * @return the build tree with the presentation information
 	 */
 	public BuildTree[] getPresentationData(String jobName, CalendarWrapper startDate) {
 		return XMLJobFactory.getPresentationDataFromFile(Globals.dataPath + jobName, startDate);
@@ -157,9 +179,13 @@ public class BuildFlowStatsPlugin extends Plugin {
 	public String[] getStoredJobs() {
 		return new File(Globals.dataPath).list();
 	}
-
+	
 	/**
 	 * Delete data between startDate and endDate for jobName
+	 * @param  jobName the name of the job from which data should be deleted
+	 * @param  startDate the start data for data deletion
+	 * @param  endDate the end date for data deletion
+	 * @return list of all the files that were deleted
 	 */
 	public ArrayList<String> deleteData(String jobName, String startDate, String endDate) {
 		String jobFolderName = Globals.dataPath + jobName;
@@ -180,9 +206,11 @@ public class BuildFlowStatsPlugin extends Plugin {
 		}
 		return deletedFiles;
 	}
-
+	
 	/**
-	 * Delete all data for jobName
+	 * Deletes all data for jobName]
+	 * @param  jobName the name of the job from which data should be deleted
+	 * @return list of all the files that were deleted
 	 */
 	public ArrayList<String> deleteData(String jobName) {
 		String jobFolderName = Globals.dataPath + jobName;
