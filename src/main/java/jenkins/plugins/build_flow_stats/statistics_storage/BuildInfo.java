@@ -25,10 +25,10 @@ public abstract class BuildInfo {
 
 	public String getString(int tabLevel) {
 		String buildInfo = "";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<JobName>" + jobName + "</JobName>";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<BuildNumber>" + buildNumber + "</BuildNumber>";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<Date>" + date + "</Date>";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<Result>" + result + "</Result>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<JobName>" + jobName + "</JobName>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<BuildNumber>" + buildNumber + "</BuildNumber>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<Date>" + date + "</Date>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<Result>" + result + "</Result>";
 		return buildInfo;
 	}
 

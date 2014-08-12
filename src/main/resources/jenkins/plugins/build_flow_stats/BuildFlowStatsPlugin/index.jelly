@@ -13,48 +13,51 @@
 			<hr/>
 			<h2>${%Data Presentation}</h2>
 			<form action="presentData">
-			<label>Present data for builds from the last: </label>
-			<input type="text" name="range" size="5" value="2"/>
-			<select name="rangeUnits">
-				<option>Days</option>
-				<option selected="true">Weeks</option>
-				<option>Months</option>
-				<option>Years</option>
-			</select>
-			<br/><br/>
-			<label>Job: </label>
-			<select name="jobName">
-				<j:forEach var="job" items="${it.storedJobs}">
-				<option>${job}</option>
-				</j:forEach>
-			</select>
-			<br/>
-			<br/>
-			<input type="submit" class="submit-button" value="${%Present Data}" name="Submit"/>
+				<label>Present data for builds from the last: </label>
+				<input type="text" name="range" size="5" value="2"/>
+				<select name="rangeUnits">
+					<option>Days</option>
+					<option selected="true">Weeks</option>
+					<option>Months</option>
+					<option>Years</option>
+				</select>
+				<br/><br/>
+				<label>Job: </label>
+				<select name="jobName">
+					<j:forEach var="job" items="${it.storedJobs}">
+					<option>${job}</option>
+					</j:forEach>
+				</select>
+				<br/><br/>
+				<input type="submit" class="submit-button" value="${%Present Data}" name="Submit"/>
 			</form>
 			<br/>
 			<hr/>
 			<h2>${%Data Deletion}</h2>
 			<form action="deleteData">
-			<label>Job: </label>
-			<select name="jobNameToDelete">
-				<j:forEach var="job" items="${it.storedJobs}">
-				<option>${job}</option>
-				</j:forEach>
-			</select>
-			<label> Remove all data for job: </label>
-			<input type="checkbox" name="deleteAll"/>
-			<br/><br/>
-			<label>Start date: </label>
-			<input type="text" name="startDate" size="15" value="2014-04-01"/>
-			<br/><br/>
-			<label>End date: </label>
-			<input type="text" name="endDate" size="15" value="2014-04-02"/>
-			<br/><br/>
-			<input type="submit" class="submit-button" value="${%Erase selected data}" name="Submit"/>
+				<label>Job: </label>
+				<select name="jobNameToDelete">
+					<j:forEach var="job" items="${it.storedJobs}">
+					<option>${job}</option>
+					</j:forEach>
+				</select>
+				<label> Remove all data for job: </label>
+				<input type="checkbox" name="deleteAll"/>
+				<br/><br/>
+				<label>Start date: </label>
+				<input type="text" name="startDate" size="15" value="2014-04-01"/>
+				<br/><br/>
+				<label>End date: </label>
+				<input type="text" name="endDate" size="15" value="2014-04-02"/>
+				<br/><br/>
+				<input type="submit" class="submit-button" value="${%Erase Selected Data}" name="Submit"/>
 			</form>
 			<br/>
 			<hr/>
+			<h2>${%Failure Analysis}</h2>
+			<form action="editFailureCauses">
+				<input type="submit" class="submit-button" value="${%Edit Failure Causes}" name="Submit"/>
+			</form>
 		</l:main-panel>
 
 	</l:layout> 

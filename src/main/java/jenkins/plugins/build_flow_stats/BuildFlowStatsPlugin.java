@@ -56,7 +56,7 @@ public class BuildFlowStatsPlugin extends Plugin {
 		BuildTree[] presentationData = getPresentationData(req.getParameter("jobName"), startDate);
 		req.setAttribute("buildsTree", presentationData[0]);
 		req.setAttribute("allFailureCauses", presentationData[1]);
-		req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/presentData.jelly").forward(req, res);
+		req.getView(this, Globals.dataPresentationView).forward(req, res);
 	}
 
 	/**
@@ -86,11 +86,46 @@ public class BuildFlowStatsPlugin extends Plugin {
 				req.setAttribute("validDateFormat", false);
 			}
 		}
-		req.getView(this, "/jenkins/plugins/build_flow_stats/BuildFlowStatsPlugin/deleteData.jelly").forward(req, res);
+		req.getView(this, Globals.dataDeletionView).forward(req, res);
 	}
 
 	/**
-	 * Calculates the start date that the user has selected and returns a CalendarWrapper object
+	 * Create FailureAnalyser from XML-file and get to the edit view.
+	 */
+	public void doEditFailureCauses(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+		File failureAnalysisFile = new File(Globals.failureAnalysisFileName);
+		if (failureAnalysisFile.exists()) {
+			FailureAnalyser analyser = new FailureAnalyser(failureAnalysisFile); 
+			req.setAttribute("analyser", analyser);
+		}
+		req.getView(this, Globals.editFailureCausesView).forward(req, res);
+	}
+
+	/**
+	 * Write failure causes changes to XML and get to a page displaying the results.
+	 */
+	public void doStoreFailureCauseChanges(StaplerRequest req, StaplerResponse res) throws ServletException, IOException {
+		FailureAnalyser analyser = new FailureAnalyser();
+		Map<String, String[]> map = req.getParameterMap();
+		Iterator<String> iterator = map.keySet().iterator();
+		while (iterator.hasNext()) {
+			String name = iterator.next();
+			if (name.startsWith("name")) {
+				int nr = Integer.parseInt(name.replace("name_", ""));
+				analyser.addFailureCauseRule(new FailureCauseRule(map.get("name_" + nr)[0], map.get("description_" + nr)[0], map.get("patterns_" + nr)));
+			}
+		}
+		File failureAnalysisFile = new File(Globals.failureAnalysisFileName);
+		if (!failureAnalysisFile.exists()) {
+			new File(Globals.failureAnalysisPath).mkdirs();
+			failureAnalysisFile.createNewFile();
+		}
+		analyser.writeToXML(Globals.failureAnalysisFileName);
+		req.getView(this, Globals.indexView).forward(req, res);
+	}
+
+	/**
+	 * Calculate the start date that the user has selected and returns a CalendarWrapper object
 	 * @return the start date as a CalendarWrapper object
 	 */
 	public CalendarWrapper getStartDate(int range, String rangeUnits) {
@@ -112,7 +147,7 @@ public class BuildFlowStatsPlugin extends Plugin {
 	 * Create the Build Tree with the options defined by the user
 	 */
 	public BuildTree[] getPresentationData(String jobName, CalendarWrapper startDate) {
-		return XMLJobFactory.getPresentationDataFromFile(getStoregePath() + jobName, startDate);
+		return XMLJobFactory.getPresentationDataFromFile(Globals.dataPath + jobName, startDate);
 	}
 
 	/**
@@ -120,14 +155,14 @@ public class BuildFlowStatsPlugin extends Plugin {
 	 * @return array containing all jobs that have information stored
 	 */
 	public String[] getStoredJobs() {
-		return new File(getStoregePath()).list();
+		return new File(Globals.dataPath).list();
 	}
 
 	/**
 	 * Delete data between startDate and endDate for jobName
 	 */
 	public ArrayList<String> deleteData(String jobName, String startDate, String endDate) {
-		String jobFolderName = getStoregePath() + jobName;
+		String jobFolderName = Globals.dataPath + jobName;
 		File jobFolder = new File(jobFolderName);
 		String[] allFiles = jobFolder.list();
 		ArrayList<String> deletedFiles = new ArrayList<String>();	
@@ -150,7 +185,7 @@ public class BuildFlowStatsPlugin extends Plugin {
 	 * Delete all data for jobName
 	 */
 	public ArrayList<String> deleteData(String jobName) {
-		String jobFolderName = getStoregePath() + jobName;
+		String jobFolderName = Globals.dataPath + jobName;
 		File jobFolder = new File(jobFolderName);
 		String[] allFiles = jobFolder.list();
 		ArrayList<String> deletedFiles = new ArrayList<String>();	
@@ -161,14 +196,6 @@ public class BuildFlowStatsPlugin extends Plugin {
 		}
 		new File(jobFolderName).delete();
 		return deletedFiles;
-	}
-
-	/**
-	 * Get the storage path for this plugin
-	 * @return the storage path
-	 */
-	public static String getStoregePath() {
-		return Jenkins.getInstance().getRootDir().toString() + "/build-flow-stats/data/"; //TODO: Decide storage path
 	}
 
 }

@@ -11,7 +11,7 @@ public abstract class BuildTreeElement {
 	protected String tabLevelString;
 
 	public BuildTreeElement(int tabLevel) {
-		tabLevelString = TabLevel.getString(tabLevel);
+		tabLevelString = Globals.getTabLevelString(tabLevel);
 	}
 
 	public abstract boolean getIsBuildTreeJob();

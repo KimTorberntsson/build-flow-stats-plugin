@@ -1,5 +1,6 @@
 package jenkins.plugins.build_flow_stats;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -10,53 +11,71 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Element;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
-import java.io.File;
-import java.io.IOException;
 import hudson.model.AbstractBuild;
+
 public class FailureAnalyser {
 
-	private ArrayList<FailureClassificationRule> rules;
+	private ArrayList<FailureCauseRule> failureCauseRules;
 
-	public FailureAnalyser(String fileName) {
-		rules = new ArrayList<FailureClassificationRule>();
+	public FailureAnalyser() {
+		failureCauseRules = new ArrayList<FailureCauseRule>();
+	}
+
+	public FailureAnalyser(File xmlFile) {
+		this();
 		try {
-			File xmlFile = new File(fileName);
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(xmlFile);
 			doc.getDocumentElement().normalize();
 			Element rootElement = doc.getDocumentElement();
-			NodeList rulesNodeList = rootElement.getElementsByTagName("FailureCause");
-			for (int i = 0; i < rulesNodeList.getLength(); i++) {
-				rules.add(new FailureClassificationRule((Element) rulesNodeList.item(i)));
+			NodeList failureCauseRuleNodeList = rootElement.getElementsByTagName("FailureCause");
+			for (int i = 0; i < failureCauseRuleNodeList.getLength(); i++) {
+				failureCauseRules.add(new FailureCauseRule((Element) failureCauseRuleNodeList.item(i)));
 			}
 		} catch (IOException e) {
-			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + fileName); //TODO: Fix this exception
+			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + xmlFile); //TODO: Fix this exception
 		} catch (ParserConfigurationException e) {
-			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + fileName); //TODO: Fix this exception
+			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + xmlFile); //TODO: Fix this exception
 		} catch (SAXException e) {
-			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + fileName); //TODO: Fix this exception
+			throw new RuntimeException("Could not instantiate failure analyser from XML-file " + xmlFile); //TODO: Fix this exception
 		}
 	}
 
-	public String toString() {
-		String ret = "";
-		Iterator<FailureClassificationRule> iterator = rules.iterator();
-		while(iterator.hasNext()) {
-			ret += iterator.next() + "\n";
-		}
-		return ret;
+	public void addFailureCauseRule(FailureCauseRule failureCauseRule) {
+		failureCauseRules.add(failureCauseRule);
 	}
 
-	public FailureClassificationRule analyseBuildForFailures(AbstractBuild build) {
-		Iterator<FailureClassificationRule> iterator = rules.iterator();
+	public ArrayList<FailureCauseRule> getFailureCauseRules() {
+		return failureCauseRules;
+	}
+
+	public FailureCauseRule matches(AbstractBuild build) {
+		Iterator<FailureCauseRule> iterator = failureCauseRules.iterator();
 		while (iterator.hasNext()) {
-			FailureClassificationRule rule = iterator.next();
+			FailureCauseRule rule = iterator.next();
 			if (rule.matches(build)) {
 				return rule;
 			}
 		}
-		return new FailureClassificationRule("Unknown failure cause",
-											 "Add failure rules to match build failure to failure cause");
+		return new FailureCauseRule("Unknown failure cause", "Add failure cause rules to match build failure to failure cause");
 	}
+
+	public void writeToXML(String fileName) {
+		File file = new File(fileName);
+		try {
+			BufferedWriter output = new BufferedWriter(new FileWriter(file));
+			output.write("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
+			output.write("\n<FailureCauses>");
+			Iterator<FailureCauseRule> iterator = failureCauseRules.iterator();
+			while(iterator.hasNext()) {
+				output.write(iterator.next().toString()); 
+			}
+			output.write("\n</FailureCauses>");
+			output.close();
+		} catch (IOException e) {
+			e.printStackTrace(); //Fix This Exception
+		}
+	}
+
 }

@@ -10,19 +10,26 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 import java.lang.RuntimeException;
 
-public class FailureClassificationRule {
+public class FailureCauseRule {
 
 	private String name;
 	private String description;
 	private ArrayList<Pattern> patterns;
 
-	public FailureClassificationRule(String name, String description) {
+	public FailureCauseRule(String name, String description) {
 		this.name = name;
 		this.description = description;
 		patterns = new ArrayList<Pattern>();
 	}
 
-	public FailureClassificationRule(Element element) {
+	public FailureCauseRule(String name, String description, String[] patterns) {
+		this(name, description);
+		for (int i = 0; i < patterns.length; i++) {
+			addPattern(patterns[i]);
+		}
+	}
+
+	public FailureCauseRule(Element element) {
 		this(element.getElementsByTagName("Name").item(0).getTextContent(), 
 			 element.getElementsByTagName("Description").item(0).getTextContent());
 		NodeList patternsNodeList = element.getElementsByTagName("Pattern");
@@ -31,8 +38,20 @@ public class FailureClassificationRule {
 		}
 	}
 
+	public void addPattern(String pattern) {
+		patterns.add(Pattern.compile(pattern));
+	}
+
 	public String getName() {
 		return name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public ArrayList<Pattern> getPatterns() {
+		return patterns;
 	}
 
 	public boolean matches(AbstractBuild build) {
@@ -55,7 +74,14 @@ public class FailureClassificationRule {
 	}
 
 	public String toString() {
-		return "\nFailureCause: " + name + "\nDescription: " + description + "\nPatterns:" + patterns;
+		String ret = "\n\t<FailureCause>";
+		ret += "\n\t\t<Name>" + name + "</Name>";
+		ret += "\n\t\t<Description>" + description + "</Description>";
+		Iterator<Pattern> iterator = patterns.iterator();
+		while (iterator.hasNext()) {
+			ret += "\n\t\t<Pattern>" + iterator.next() + "</Pattern>"; 
+		}
+		return ret + "\n\t</FailureCause>";
 	}
 
 }

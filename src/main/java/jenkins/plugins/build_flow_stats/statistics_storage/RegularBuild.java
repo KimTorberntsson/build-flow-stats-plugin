@@ -13,18 +13,18 @@ public class RegularBuild extends BuildInfo {
 		super(build, analyser);
 		failureCause = "";
 		if (!result.equals("SUCCESS")) {
-			failureCause = analyser.analyseBuildForFailures(build).getName();
+			failureCause = analyser.matches(build).getName();
 		}
 	}
 
 	public String getString(int tabLevel) {
 		String buildInfo = "";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<Build>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<Build>";
 		buildInfo += super.getString(tabLevel + 1);
 		if (!failureCause.equals("")) {
-			buildInfo += "\n" + TabLevel.getString(tabLevel + 1) + "<FailureCause>" + failureCause + "</FailureCause>";
+			buildInfo += "\n" + Globals.getTabLevelString(tabLevel + 1) + "<FailureCause>" + failureCause + "</FailureCause>";
 		}
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "</Build>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "</Build>";
 		return buildInfo;
 	}
 }

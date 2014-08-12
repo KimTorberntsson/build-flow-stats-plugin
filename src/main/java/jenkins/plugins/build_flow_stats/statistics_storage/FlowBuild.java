@@ -47,10 +47,10 @@ public class FlowBuild extends BuildInfo {
 
 	public String getString(int tabLevel) {
 		String buildInfo = "";
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "<FlowBuild>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "<FlowBuild>";
 		buildInfo += super.getString(tabLevel + 1);
 		buildInfo += subBuilds.getString(tabLevel + 1);
-		buildInfo += "\n" + TabLevel.getString(tabLevel) + "</FlowBuild>";
+		buildInfo += "\n" + Globals.getTabLevelString(tabLevel) + "</FlowBuild>";
 		return buildInfo;
 	}
 

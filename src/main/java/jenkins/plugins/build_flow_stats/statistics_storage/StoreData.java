@@ -17,13 +17,10 @@ public class StoreData {
 
 	private PrintStream stream;
 	private String jobName;
-	private Jenkins jenkins;
-	private Project project;
-	private String rootDir;
-	private String storePath;
-	private File storePathFile;
+	private File storePath;
 	private String[] oldFiles;
 	private File buildsPath;
+	private Project project;
 	private FailureAnalyser analyser;
 
 	/**
@@ -34,17 +31,17 @@ public class StoreData {
 	public StoreData(PrintStream stream, String jobName) {
 		this.stream = stream;
 		this.jobName = jobName;
-		stream.println("\nCollecting and storing data to XML-file for " + jobName);
-		this.jenkins = Jenkins.getInstance();
-		this.project = (Project) jenkins.getItem(jobName);
-		String jenkinsRootDir = jenkins.getRootDir().toString();
-		this.rootDir = jenkinsRootDir + "/build-flow-stats/"; //TODO: Decide path for storage.
-		this.storePath = rootDir + "data/" + jobName + "/"; 
-		this.storePathFile = new File(storePath);
-		storePathFile.mkdirs();
-		this.oldFiles = storePathFile.list();
-		this.buildsPath = new File(jenkinsRootDir + "/jobs/" + jobName + "/builds");
-		analyser = new FailureAnalyser(rootDir + "FailureAnalysis/FailureCauses.xml");
+		storePath = new File(Globals.dataPath + jobName); //TODO: can mkdirs be on one line?
+		storePath.mkdirs();
+		oldFiles = storePath.list();
+		buildsPath = new File(Globals.jenkinsRootPath + "/jobs/" + jobName + "/builds"); 
+		project = (Project) Jenkins.getInstance().getItem(jobName);
+		File failureAnalysisFile = new File(Globals.failureAnalysisFileName); //TODO: Try to do this in one line as well
+		if (failureAnalysisFile.exists()) {
+			analyser = new FailureAnalyser(failureAnalysisFile);
+		} else {
+			analyser = new FailureAnalyser();
+		}
 	}
 
 	/**
@@ -175,7 +172,7 @@ public class StoreData {
 			lines = getFileInfoAndDelete(oldFiles[oldFiles.length - 1]);
 		}
 		String fileName = builds.getLastBuild().getDate() + ".xml";
-		File file = new File(storePath + fileName);
+		File file = new File(storePath + "/" + fileName);
 		try {
 			BufferedWriter output = new BufferedWriter(new FileWriter(file));
 			if (doAppend) {
@@ -195,7 +192,6 @@ public class StoreData {
 			} else {
 				stream.println("Wrote data to " + fileName);
 			}
-			
 		} catch (IOException e) {
 			e.printStackTrace(); //Fix This Exception
 		}
@@ -208,7 +204,7 @@ public class StoreData {
 	 * @return The content of the file
 	 */
 	private String getFileInfoAndDelete(String fileName) {
-		File file = new File(storePath + fileName);
+		File file = new File(storePath + "/" + fileName);
 		String lines = "";
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
