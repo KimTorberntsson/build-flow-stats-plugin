@@ -29,24 +29,6 @@ public abstract class Job {
 	}
 
 	/**
-	 * Adds results for a build to the job
-	 * @param resultString the string with the result for the build
-	 */
-	public void addResultForBuild(String resultString) {
-		if (resultString.equals("SUCCESS")) {
-			buildResults.addSuccess();
-		} else if (resultString.equals("UNSTABLE")) {
-			buildResults.addUnstable();
-		} else if (resultString.equals("NOT_BUILT")) {
-			buildResults.addNoBuild();
-		} else if (resultString.equals("ABORTED")) {
-			buildResults.addAbort();
-		} else {
-			buildResults.addFailure();
-		}
-	}
-
-	/**
 	 * The subclasses (FlowJob and ResularJob) need to be able to read data from XML.
 	 * The failure cause list is included so that they will be able to add information 
 	 * about failures from builds to it. That list contains information about all failures

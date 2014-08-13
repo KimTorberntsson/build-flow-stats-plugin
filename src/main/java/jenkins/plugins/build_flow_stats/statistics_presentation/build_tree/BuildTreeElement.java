@@ -24,7 +24,7 @@ public abstract class BuildTreeElement {
 
 	/**
 	 * Abstract method for deciding if the instance is a job element. Should be
-	 * used in a cleaner manner so that this method would not be necessary, but
+	 * possible to redisign so that this method would not be necessary, but
 	 * since i am dealing with jelly scripts with the presentation I could not
 	 * come up with a better solution.
 	 */

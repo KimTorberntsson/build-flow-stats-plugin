@@ -34,7 +34,7 @@ public class RegularJob extends Job {
 	public void addBuildFromXML(Node regularBuildNode, FailureCauseList allFailureCauses) {
 		Element nonFlowBuildElement = (Element) regularBuildNode;
 		String result = nonFlowBuildElement.getElementsByTagName("Result").item(0).getTextContent();
-		addResultForBuild(result);
+		buildResults.addResultForBuild(result);
 		if (!result.equals("SUCCESS")) {
 			String failureCause = nonFlowBuildElement.getElementsByTagName("FailureCause").item(0).getTextContent();
 			String buildNumber = nonFlowBuildElement.getElementsByTagName("BuildNumber").item(0).getTextContent();

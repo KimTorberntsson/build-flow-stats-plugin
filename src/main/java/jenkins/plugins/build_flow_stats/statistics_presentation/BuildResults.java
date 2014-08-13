@@ -46,36 +46,34 @@ public class BuildResults {
 	 */
 	public BuildResults() {
 		successes = 0;
-		failures = 0;
-		aborts = 0;
 		unstables = 0;
+		failures = 0;
 		nobuilds = 0;
+		aborts = 0;
 		totalbuilds = 0;
 	}
 
-	public void addSuccess() {
-		successes ++;
-		totalbuilds ++;
-	}
-
-	public void addFailure() {
-		failures ++;
-		totalbuilds ++;
-	}
-
-	public void addAbort() {
-		aborts ++;
-		totalbuilds ++;
-	}
-
-	public void addUnstable() {
-		unstables ++;
-		totalbuilds ++;
-	}
-
-	public void addNoBuild() {
-		nobuilds ++;
-		totalbuilds ++;
+	/**
+	 * Adds results for the job from a result string originated from a build.
+	 * @param resultString string with the result info
+	 */
+	public void addResultForBuild(String resultString) {
+		if (resultString.equals("SUCCESS")) {
+			successes += 1;
+			totalbuilds += 1;
+		} else if (resultString.equals("UNSTABLE")) {
+			unstables += 1;
+			totalbuilds += 1;
+		} else if (resultString.equals("FAILURE")) {
+			failures += 1;
+			totalbuilds += 1;
+		} else if (resultString.equals("NOT_BUILT")) {
+			nobuilds += 1;
+			totalbuilds += 1;
+		} else if (resultString.equals("ABORTED")) {
+			aborts += 1;
+			totalbuilds += 1;
+		}
 	}
 
 	/**

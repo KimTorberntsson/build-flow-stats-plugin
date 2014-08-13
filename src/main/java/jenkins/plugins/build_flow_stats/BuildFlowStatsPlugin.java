@@ -6,11 +6,9 @@ import jenkins.*;
 import jenkins.model.*;
 import org.kohsuke.stapler.export.ExportedBean;
 import hudson.model.ManagementLink;
-
 import java.io.*;
 import java.util.*;
 import javax.servlet.ServletException;
-
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.StaplerRequest;
 

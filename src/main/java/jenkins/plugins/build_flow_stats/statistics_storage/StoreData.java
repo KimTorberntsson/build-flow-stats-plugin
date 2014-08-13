@@ -61,12 +61,12 @@ public class StoreData {
 	public StoreData(PrintStream stream, String jobName) {
 		this.stream = stream;
 		this.jobName = jobName;
-		storePath = new File(Globals.dataPath + jobName); //TODO: can mkdirs be on one line?
+		storePath = new File(Globals.dataPath + jobName);
 		storePath.mkdirs();
 		oldFiles = storePath.list();
 		buildsPath = new File(Globals.jenkinsRootPath + "/jobs/" + jobName + "/builds"); 
 		project = (Project) Jenkins.getInstance().getItem(jobName);
-		File failureAnalysisFile = new File(Globals.failureAnalysisFileName); //TODO: Try to do this in one line as well
+		File failureAnalysisFile = new File(Globals.failureAnalysisFileName); 
 		if (failureAnalysisFile.exists()) {
 			analyser = new FailureAnalyser(failureAnalysisFile);
 		} else {

@@ -23,8 +23,12 @@ public class RegularBuild extends BuildInfo {
 	public RegularBuild(Build build, FailureAnalyser analyser) {
 		super(build, analyser);
 		failureCause = "";
-		if (!result.equals("SUCCESS")) {
+		if (result.equals("UNSTABLE") || result.equals("FAILURE")) {
 			failureCause = analyser.matches(build).getName();
+		} else if (result.equals("ABORTED")) {
+			failureCause = "Aborted";
+		} else if (result.equals("NOT_BUILT")) {
+			failureCause = "Not Built";
 		}
 	}
 

@@ -50,7 +50,7 @@ public class FlowJob extends Job {
 	 */
 	public void addBuildFromXML(Node flowBuildNode, FailureCauseList allFailureCauses) {
 		Element flowBuildElement = (Element) flowBuildNode;
-		addResultForBuild(flowBuildElement.getElementsByTagName("Result").item(0).getTextContent());
+		buildResults.addResultForBuild(flowBuildElement.getElementsByTagName("Result").item(0).getTextContent());
 		XMLJobFactory.addBuildsFromNode(flowBuildNode, subJobs, allFailureCauses);
 	}
 
