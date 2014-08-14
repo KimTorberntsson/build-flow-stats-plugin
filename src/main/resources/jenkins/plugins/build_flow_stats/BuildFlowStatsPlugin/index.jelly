@@ -34,7 +34,7 @@
 			<br/>
 			<hr/>
 			<h2>${%Data Deletion}</h2>
-			<form action="deleteData">
+			<form action="deleteData" onsubmit="return confirm('Are you sure you want to delete the data?');">
 				<label>Job: </label>
 				<select name="jobNameToDelete">
 					<j:forEach var="job" items="${it.storedJobs}">
