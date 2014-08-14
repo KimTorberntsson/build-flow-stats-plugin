@@ -21,7 +21,7 @@
 			<h1><img src="${rootURL}/plugin/build-flow-stats/icons/build-flow-stats.png" height="50" width="50"/>${% Build Flow Stats}</h1>
 			<hr/>
 			<h2>${%Failure Causes Editor}</h2>
-			<form id ="failureCauses" action="storeFailureCauseChanges">
+			<form id ="failureCauses" action="storeFailureCauseChanges" onsubmit="return validateForm()">
 				<j:forEach var="failureCause" items="${analyser.failureCauseRules}">
 					<script>
 						var patterns = [];

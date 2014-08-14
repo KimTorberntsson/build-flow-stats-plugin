@@ -237,3 +237,36 @@ function deleteInnerHTML(id) {
 	document.getElementById(id).innerHTML = "";
 }
 
+/**
+ * Walks through all failure causes that have not been deleted by the user and 
+ * checks if there are any empty fields. If there are, a pop-up window is brought 
+ * up and no data is sent.
+ * @return {boolean} whether the form is valid or not
+ */
+function validateForm() {
+	var valid = true;
+	for (i = 1; i < failureCauseNumber; i++) {
+		if (document.getElementById("name_" + i) != null) {
+			if (document.getElementById("name_" + i).value === "") {
+				return  alertUnvalidForm();
+			}
+			if (document.getElementById("description_" + i).value === "") {
+				return  alertUnvalidForm();
+			}
+			for (k = 1; k < failureCausePatternNumber[i - 1]; k++) {
+				if (document.getElementById("pattern_" + i + "_" + k).value === "") {
+					return  alertUnvalidForm();
+				}
+			}
+		}
+	}
+}
+
+/**
+ * Brings up a popup-window if any field are empty
+ * @return {boolean} false because of invalid form
+ */
+function alertUnvalidForm() {
+	alert("There are empty fields. Please fill them before submitting data.");
+	return false;
+}
