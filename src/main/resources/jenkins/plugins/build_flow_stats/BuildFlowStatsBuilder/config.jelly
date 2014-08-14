@@ -1,9 +1,17 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 
-	<f:entry field="job" title="Choose build flow to collect data from: ">
-		<f:select />
-	</f:entry>
+	<f:radioBlock name="useRegEx" value="False" title="Choose job from list" checked="${instance.useRegEx==false}"> 
+		<f:entry field="job" title="Job Name: ">
+			<f:select />
+		</f:entry>
+	</f:radioBlock>
+
+	<f:radioBlock name="useRegEx" value="True" title="Choose job using regex" checked="${!instance.useRegEx==false}"> 
+		<f:entry field="job" title="Job Name: ">
+			<f:textbox />
+		</f:entry>
+	</f:radioBlock>
 
 	<f:entry field="startDate" title="StartDate: ">
 		<f:textbox />

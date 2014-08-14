@@ -2,7 +2,7 @@ package jenkins.plugins.build_flow_stats;
 
 import java.io.*;
 import java.util.*;
-import java.util.Iterator;
+import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import org.kohsuke.stapler.*;
@@ -26,7 +26,12 @@ public class BuildFlowStatsBuilder extends Builder {
 	/**
 	 * the job from which data should be collected
 	 */
-	private final String job;
+	private String job;
+
+	/**
+	 * whether regex is used for the job selection or not
+	 */
+	private boolean useRegEx = false;
 	
 	/**
 	 * This defines the earliest date that data will be collected from. 
@@ -34,12 +39,12 @@ public class BuildFlowStatsBuilder extends Builder {
 	 * the previous date and time of the latest stored build, until the current 
 	 * date and time.
 	 */
-	private final String startDate;
+	private String startDate;
 	
 	/**
 	 * calendar wrapper object of the start date
 	 */
-	private final CalendarWrapper startDateObject;
+	private CalendarWrapper startDateObject;
 
 	/**
 	 * Constructor for creating the build step. It fetches information from
@@ -48,19 +53,19 @@ public class BuildFlowStatsBuilder extends Builder {
 	 * @param  startDate the start date for collection of data
 	 */
 	@DataBoundConstructor
-	public BuildFlowStatsBuilder(String job, String startDate) {
+	public BuildFlowStatsBuilder(String job, boolean useRegEx, String startDate, CalendarWrapper startDateObject) {
 		this.job = job;
+		this.useRegEx = useRegEx;
 		this.startDate = startDate;
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
-			this.startDateObject = new CalendarWrapper(startDate + "_00-00-00");
-		} else {
-			throw new RuntimeException("Wrong format for start date");
-		}
+		this.startDateObject = startDateObject;
 	}
 
 	public String getJob() {
 		return job;
+	}
+
+	public boolean getUseRegEx() {
+		return useRegEx;
 	}
 
 	public String getStartDate() {
@@ -68,8 +73,9 @@ public class BuildFlowStatsBuilder extends Builder {
 	}
 
 	/**
-	 * This method gets called when the build step gets invoked. A StoreData 
-	 * object is created for the job and then data is stored.
+	 * This method gets called when the build step gets invoked. If a regex is used for the
+	 * job selection data will be collected for all jobs that match the regex. Otherwise data
+	 * will be collected for the job selected in the list. 
 	 * @param  build the build
 	 * @param  launcher the launcher
 	 * @param  listener the listener
@@ -78,9 +84,43 @@ public class BuildFlowStatsBuilder extends Builder {
 	@Override
 	public boolean perform(AbstractBuild build, Launcher launcher, BuildListener listener) {
 		PrintStream stream = listener.getLogger();
-		StoreData data = new StoreData(stream, job);
-		data.storeBuildInfo(startDateObject);
+		if (useRegEx) {
+			stream.println("\nUsing regex for job selection. The regex is: " + job + "\n");
+			Pattern pattern = Pattern.compile(job);
+			Iterator<String> jobs = getJobNames();
+			while (jobs.hasNext()) {
+				String job = jobs.next();
+				if (pattern.matcher(job).matches()) {
+					stream.println("Saving data for: " + job);
+					StoreData data = new StoreData(stream, job);
+					data.storeBuildInfo(startDateObject);
+				}
+			}
+		} else {
+			stream.println("Saving data for: " + job);
+			StoreData data = new StoreData(stream, job);
+			data.storeBuildInfo(startDateObject);
+		}
 		return true;
+	}
+
+	/**
+	 * Returns an iterator that iterates through all the jobs that exist
+	 * in the Jenkins instance.
+	 * @return the iterator
+	 */
+	private static Iterator<String> getJobNames() {
+		ArrayList<String> jobNames = new ArrayList<String>();
+		Jenkins jenkins = Jenkins.getInstance();
+		Iterator<String> jobs = jenkins.getJobNames().iterator();
+		//Check if the jobs really exist
+		while (jobs.hasNext()) {
+			String job = jobs.next();
+			if (jenkins.getItem(job) != null) {
+				jobNames.add(job);
+			}
+		}
+		return jobNames.iterator();
 	}
 
 	/**
@@ -88,6 +128,27 @@ public class BuildFlowStatsBuilder extends Builder {
 	 */
 	@Extension 
 	public static final class BuildFlowStatsBuilderDescriptor extends BuildStepDescriptor<Builder> {
+
+		/**
+		 * Creates a BuildFlowStatsBuilder object from the parameters defined by the 
+		 * user. The parameters are all available from the parameter formData.
+		 * @param  req a stapler request
+		 * @param  formData JSON object that contains the parameters selected by the user
+		 * @return the builder object
+		 */
+		@Override
+		public BuildFlowStatsBuilder newInstance(StaplerRequest req, JSONObject formData) {
+			String job = formData.getJSONObject("useRegEx").getString("job");
+			boolean useRegEx = Boolean.parseBoolean(formData.getJSONObject("useRegEx").getString("value"));
+			String startDate = formData.getString("startDate");
+			CalendarWrapper startDateObject;
+			if (startDate.matches("\\d{4}-\\d{2}-\\d{2}")) {
+				startDateObject = new CalendarWrapper(startDate + "_00-00-00");
+			} else {
+				throw new RuntimeException("Wrong format for start date");
+			}
+			return new BuildFlowStatsBuilder(job, useRegEx, startDate, startDateObject);
+		}
 
 		/**
 		 * Indicates that this builder can be used with all kinds of project types 
@@ -113,14 +174,9 @@ public class BuildFlowStatsBuilder extends Builder {
 		 */
 		public ListBoxModel doFillJobItems() {
 			ListBoxModel items = new ListBoxModel();
-			Jenkins jenkins = Jenkins.getInstance();
-			Iterator<String> jobNamesIterator = jenkins.getJobNames().iterator();
-			while (jobNamesIterator.hasNext()) {
-				String jobName = jobNamesIterator.next();
-				Item item = jenkins.getItem(jobName);
-				if (item != null) {
-					items.add(jobName);
-				}
+			Iterator<String> jobs = getJobNames();
+			while (jobs.hasNext()) {
+				items.add(jobs.next());
 			}
 			return items;
 		}
