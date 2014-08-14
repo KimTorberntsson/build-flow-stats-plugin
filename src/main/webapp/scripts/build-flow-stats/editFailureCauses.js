@@ -8,7 +8,6 @@
  * @author  Kim Torberntsson
  */
 
-
 /**
  * The following variables are used for giving the different 
  * elements unique id:s.

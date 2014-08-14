@@ -11,9 +11,9 @@ The plugin adds a build step called _Store Flow Build Statistics_ that can colle
 ###Data Collection
 The build step that the plugin provides is responsible for collecting data. Start with creating a job that should collect data by pressing the button _New Item_ from the side panel in the Jenkins main page. Give the job a name and use a free-style-project. In the view for the new job, press the button _Configure_ and press the button _Add build step_. Choose the option _Store Flow Build Statistics_ from the options in the list. A view will be added that should look something like this:
 
-![]( http://i.imgur.com/aYrZMjA.jpg)
+![](http://i.imgur.com/CvcDebZ.png)
 
-Choose the job that you want to collect data from and the first date that data should be collected from. Data is collected when the data collection job is built. 
+Choose whether you want to select jobs from a list of all available jobs or use a regex for matching jobnames. Also choose the first date that data should be collected from. Data is collected when the data collection job is built. 
 
 ###Get to the Plugin Main View
 Get to the main view of the plugin by pressing the _Manage Jenkins_-button from the Jenkins main page. Look for a button that looks like this and press it:
@@ -46,7 +46,7 @@ In order for the plugin to be able to match failure causes with builds the user 
 
 When storing data the plugin uses the failure causes listed in the view called _Failure Causes Editor_. Failure causes can be added, deleted and edited. They should have a name, a description and one or several patterns. When collecting data the plugin will search for the pattern (or patterns) in the build log and match the failure causes with the builds. Press the button _Save Changes_ to save the changes that were made.
 
-![](http://i.imgur.com/SdNhIYo.jpg)
+![](http://i.imgur.com/wiiRtvx.jpg)
 
 ##Tips
 * All data is stored in a folder called _flow-build-stats_ located directly under the main Jenkins folder. This includes data for the failure causes and collected data for the jobs.
@@ -54,3 +54,4 @@ When storing data the plugin uses the failure causes listed in the view called _
 * XML-files are used for storage of data and as long as the data is in the right format (with the right names of the files) the plugin will recognize and use the data. It is therefore possible to delete and edit data using the file system.
 * By the current implementation the first failure cause that is found in the log is the one that is considered to be the failure cause of that build. This means that each build can only have one failure cause.
 * By the current implementation not-built and aborted builds will be listed in the build tree as a failure cause. This means that only unstable and failed builds are analysed for user-defined failure causes by the failure analyser. Builds that the analyser are unable to match with any failure cause will get the failure cause _Unknown failure cause_.
+* The [_Git Plugin_](https://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin) has a bug that makes the build.xml for the builds very big. This also leads to memory issues. The problem is described [here](https://issues.jenkins-ci.org/browse/JENKINS-19022). A workaround for the bug can be found [here](http://scriptlerweb.appspot.com/script/show/326001). Data collection with the _Build Flow Stats Plugin_ will be very time-consuming and memory heavy (might lead to memory crashes) if it is used without the workaround for the bug caused by the _Git Plugin_.
