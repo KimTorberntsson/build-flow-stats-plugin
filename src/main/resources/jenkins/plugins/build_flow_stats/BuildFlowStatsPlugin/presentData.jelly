@@ -2,6 +2,12 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 	<l:layout title="${%Data Collection}" permission="${it.requiredPermission}">
 
+		<l:header>
+			<style>
+				pre {font-family:Verdana, Helvetica, 'sans serif'; font-size:11px;}
+			</style>
+		</l:header>
+
 		<l:side-panel>
 			<l:tasks>
 				<l:task icon="images/24x24/up.gif" href="${rootURL}/" title="${%Back to Dashboard}" />
@@ -20,10 +26,10 @@
 			<j:forEach var="buildElement" items="${buildsTree.elements}">
 				<j:choose>
 					<j:when test="${buildElement.isBuildTreeJob}">
-						<pre style="font-family: Verdana, Helvetica, 'sans serif'; font-size: 11px">${buildElement.string}</pre>
+						<pre>${buildElement.string}</pre>
 					</j:when>
 					<j:otherwise>
-						<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${buildElement.string} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${build.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
+						<pre>${buildElement.string} [ <j:forEach var="build" items="${buildElement.builds}"><a href="${rootURL}/job/${build.jobName}/${build}">${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 					</j:otherwise>
 				</j:choose>
 			</j:forEach>
@@ -31,7 +37,7 @@
 			<hr/>
 			<h2>Most Common Failure Causes</h2>
 			<j:forEach var="failureCauseElement" items="${allFailureCauses.elements}">
-				<pre style="font-family:Verdana, Helvetica, 'sans serif'; font-size:11px">${failureCauseElement.string} [ <j:forEach var="build" items="${failureCauseElement.builds}"><a href="${rootURL}/job/${build.jobName}/${build}">${build.jobName}/${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
+				<pre>${failureCauseElement.string} [ <j:forEach var="build" items="${failureCauseElement.builds}"><a href="${rootURL}/job/${build.jobName}/${build}">${build.jobName}/${build}</a><script>document.write(" ");</script></j:forEach>]</pre>
 			</j:forEach>
 			<br/>
 			<hr/>
