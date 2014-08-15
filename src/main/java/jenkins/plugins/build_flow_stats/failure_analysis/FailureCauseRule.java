@@ -76,7 +76,7 @@ public class FailureCauseRule {
 	 * @param pattern the pattern to add
 	 */
 	public void addPattern(String pattern) {
-		patterns.add(Pattern.compile(pattern));
+		patterns.add(Pattern.compile(pattern.replace("\\", "\\\\")));
 	}
 
 	public String getName() {
