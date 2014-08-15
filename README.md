@@ -48,6 +48,9 @@ When storing data the plugin uses the failure causes listed in the view called _
 
 ![](http://i.imgur.com/wiiRtvx.jpg)
 
+##Known Bugs
+* The handling of backslashes when editing the failure causes is not working correctly.
+
 ##Tips
 * All data is stored in a folder called _flow-build-stats_ located directly under the main Jenkins folder. This includes data for the failure causes and collected data for the jobs.
 * The collecting of data is separated from the other parts of the plugin, meaning that no data collection is being done when the user is in the main view of the plugin. This means that in order for newly added failure causes to be detected, the data needs to be collected again.
